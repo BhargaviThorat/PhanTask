@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import DesktopSideBar from "./sidebar_componets/DesktopSideBar";
-import MobileSideBar from "./sidebar_componets/MobileSideBar";
-import TopRightIcons from "./sidebar_componets/TopRightIcons";
-import MainContent from "./sidebar_componets/MainContent";
+import DesktopSideBar from "./sidebar_components/DesktopSideBar";
+import MobileSideBar from "./sidebar_components/MobileSideBar";
+import TopRightIcons from "./sidebar_components/TopRightIcons";
+import MainContent from "./sidebar_components/MainContent";
 
 const SideBar = ({ children }) => {
 

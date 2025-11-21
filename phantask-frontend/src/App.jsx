@@ -10,11 +10,12 @@ import Helpline from './pages/Helpline'
 import Feedback from './pages/Feedback'
 import Settings from './pages/Settings'
 import ProfileDropdown from './components/ProfileDropDown'
+import Login from './pages/login_signup/Login'
 
 const App = () => {
   return (
     <>
-      <BrowserRouter>
+      {/* <BrowserRouter>
         <SideBar>
           <Routes>
             <Route path="/" element={<Dashboard />} />
@@ -27,7 +28,9 @@ const App = () => {
             <Route path="/settings" element={<Settings />} />
           </Routes>
         </SideBar>
-      </BrowserRouter>
+      </BrowserRouter> */}
+
+      <Login />
     </>
   )
 }
