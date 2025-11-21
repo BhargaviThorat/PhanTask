@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import wallpaper from '../../assets/wallpaper-1.jpg';
 import Phanpy_Greet from '../../components/login_signup_components/Phanpy_Greet';
+import LoginForm from '../../components/login_signup_components/LoginForm';
 
 const Login = () => {
 
@@ -15,7 +16,7 @@ const Login = () => {
             >
                 {/* First Section - Welcome + Phanpy */}
                 <section
-                    className="w-full lg:w-[40%] rounded-2xl flex flex-col justify-center items-center p-4 sm:p-6 text-[#FFEAEA]"
+                    className="w-full lg:w-[50%] rounded-2xl flex flex-col justify-center items-center p-4 sm:p-6 text-[#FFEAEA]"
                     aria-labelledby="welcome-heading"
                 >
                     <div className="hover:scale-105 transition-transform duration-300 flex flex-col md:flex-row items-center justify-center gap-1 w-full lg:flex-col">
@@ -28,7 +29,7 @@ const Login = () => {
                         </h1>
 
 
-                        <div className=" hidden md:flex md:w-[40%] lg:w-full lg:flex lg:items-center lg:justify-center">
+                        <div className="hidden md:flex md:w-[40%] lg:w-full lg:flex lg:items-center lg:justify-center">
                             <Phanpy_Greet />
                         </div>
                     </div>
@@ -37,10 +38,10 @@ const Login = () => {
 
                 {/* Second Section - Aside */}
                 <aside
-                    className="w-full lg:w-[60%] rounded-2xl bg-orange-100 bg-opacity-80 shadow-inner flex flex-col items-center justify-center p-4 sm:p-6 overflow-y-auto mt-4 lg:mt-0 lg:ml-4 min-h-[200px] sm:min-h-[300px]"
+                    className="w-full lg:w-[50%] rounded-2xl  flex flex-col items-center justify-center p-4 sm:p-6 overflow-y-auto mt-4 lg:mt-0 lg:p-2 lg:ml-4 min-h-[200px] sm:min-h-[300px]"
                     aria-label="Decorative or supplementary content"
                 >
-                    {/* Your aside content here */}
+                    <LoginForm />
                 </aside>
             </main>
         </div>
