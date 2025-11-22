@@ -18,6 +18,16 @@ import io.jsonwebtoken.JwtException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * REST controller that exposes authentication-related endpoints.
+ *
+ * <p>Exposes endpoints under {@code /api/auth} for:
+ * - login: authenticates a user and returns authentication data (e.g. token and user info)
+ * - logout: invalidates or handles logout for the provided authorization header
+ * - refresh-token: refreshes an existing token and returns a new one
+ *
+ * <p>This controller delegates actual authentication logic to {@link AuthService}.
+ */
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -30,20 +40,47 @@ public class AuthController {
         return ResponseEntity.ok(authService.register(req));
     }*/
 
+    /**
+     * Authenticate a user using the provided credentials.
+     *
+     * <p>Expects a {@link LoginRequest} JSON body containing username/email and password.
+     * Delegates to {@link AuthService#login(LoginRequest)} which should return a map
+     * containing authentication details (for example: token, expiry, user info).
+     *
+     * @param req the login request payload (validated)
+     * @return a ResponseEntity containing a map with authentication information
+     */
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody @Valid LoginRequest req) {
         Map<String, Object> response = authService.login(req);
         return ResponseEntity.ok(response);
     }
     
-    //Logout (front-end should just delete token, optional server blacklist if needed)
+    /**
+     * Logout the current user.
+     *
+     * <p>Clients should normally remove the token on the client-side. This endpoint is provided
+     * for optional server-side logout handling such as token blacklisting or auditing.
+     *
+     * @param authHeader the value of the Authorization header (e.g. "Bearer &lt;token&gt;")
+     * @return a ResponseEntity containing a success message
+     */
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String authHeader) {
         authService.logout(authHeader);
         return ResponseEntity.ok("Logged out successfully");
     }
     
-    //Extend session (token refresh)
+    /**
+     * Refresh an authentication token.
+     *
+     * <p>Clients should call this endpoint with the current authorization header (usually containing
+     * a refresh token or the existing token depending on implementation). The service will validate
+     * and return a refreshed token.
+     *
+     * @param authHeader the value of the Authorization header (e.g. "Bearer &lt;refresh-token&gt;")
+     * @return a ResponseEntity containing a JSON object with the new token under the key "token"
+     */
     @PostMapping("/refresh-token")
     public ResponseEntity<Map<String, String>> refreshToken(@RequestHeader("Authorization") String authHeader) {
     	if (authHeader == null || !authHeader.startsWith("Bearer ")) {

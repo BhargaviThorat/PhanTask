@@ -19,6 +19,19 @@ import com.phantask.authentication.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Service that encapsulates user-related business logic.
+ *
+ * <p>Responsibilities typically include:
+ * <ul>
+ *   <li>Retrieving user profile information for display</li>
+ *   <li>Applying updates to a user's profile</li>
+ *   <li>Handling password change requests and related validations</li>
+ * </ul>
+ *
+ * <p>Keep security-sensitive behavior (password encoding, validation, audit logging)
+ * inside this service and avoid exposing implementation details to controllers.
+ */
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
@@ -48,11 +61,40 @@ public class UserService implements UserDetailsService {
         );
     }
 
+	  /**
+     * Retrieve the profile for the given username.
+     *
+     * <p>Expected behavior:
+     * <ol>
+     *   <li>Look up the user by username</li>
+     *   <li>Map persisted user data into a {@link UserProfile} DTO</li>
+     *   <li>Return the DTO or throw an appropriate exception if not found</li>
+     * </ol>
+     *
+     * @param username the username whose profile should be retrieved
+     * @return the {@link UserProfile} for the user
+     * @throws RuntimeException if the user cannot be found or another retrieval error occurs
+     */
     public UserProfile getProfile(String username) {
         User user = userRepo.findByUsername(username).orElseThrow();
         return user.getProfile();
     }
 
+	/**
+     * Update the profile of the specified user.
+     *
+     * <p>Expected behavior:
+     * <ul>
+     *   <li>Validate incoming data from {@link UpdateProfileRequest}</li>
+     *   <li>Persist permitted changes to the user profile</li>
+     *   <li>Return a message indicating success or a description of any failure</li>
+     * </ul>
+     *
+     * @param username the username of the user whose profile will be updated
+     * @param req the {@link UpdateProfileRequest} containing profile fields to change
+     * @return a user-facing message describing the result of the update operation
+     * @throws RuntimeException if validation or persistence fails
+     */
     public String updateProfile(String username, UpdateProfileRequest req) {
         User user = userRepo.findByUsername(username)
             .orElseThrow(() -> new RuntimeException("User not found"));
@@ -69,7 +111,22 @@ public class UserService implements UserDetailsService {
         profileRepo.save(profile);
         return "Profile updated successfully";
     }
-    
+
+	/**
+     * Change the password for the given user.
+     *
+     * <p>Expected behavior:
+     * <ol>
+     *   <li>Verify the supplied current password against stored credentials</li>
+     *   <li>Validate the new password against strength and policy rules</li>
+     *   <li>Encode and persist the new password; clear first-login flag if applicable</li>
+     * </ol>
+     *
+     * @param username the username of the user requesting the password change
+     * @param req the {@link PasswordChangeRequest} containing old and new passwords
+     * @return a message indicating whether the password change succeeded
+     * @throws RuntimeException if verification fails or the new password does not meet policy
+     */
     public String changePassword(String username, PasswordChangeRequest req) {
         User user = userRepo.findByUsername(username)
             .orElseThrow(() -> new RuntimeException("User not found"));

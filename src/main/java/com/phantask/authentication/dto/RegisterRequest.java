@@ -5,6 +5,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+/**
+ * DTO used when registering a new user.
+ *
+ * <p>Contains the minimal information required to create a user account (username and email).
+ * Validation annotations can be added if desired (e.g. @NotBlank, @Email).
+ */
 @Data
 public class RegisterRequest {
 	

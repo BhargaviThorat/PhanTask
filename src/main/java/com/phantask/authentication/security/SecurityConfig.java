@@ -12,6 +12,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Central Spring Security configuration class.
+ *
+ * <p>Responsible for configuring authentication and authorization rules for the application.
+ * Typical responsibilities include:
+ * <ul>
+ *   <li>Defining which endpoints are publicly accessible and which require authentication</li>
+ *   <li>Registering authentication providers or UserDetailsService implementations</li>
+ *   <li>Configuring HTTP security settings such as CSRF, CORS, session management, and filters</li>
+ * </ul>
+ *
+ * <p>Keep this class focused on wiring security components; business logic should remain in services.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
