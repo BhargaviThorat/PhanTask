@@ -33,6 +33,12 @@ public class UserService implements UserDetailsService {
                     .orElseThrow(() -> 
                     new UsernameNotFoundException("User not found"));
         
+        // DEBUG
+        System.out.println("Username: " + username);
+        System.out.println("Password hash from DB: " + user.getPassword());
+       // BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        //boolean matches = encoder.matches("Admin@123", "$2a$10$JKTb6X/KVNKDm0BgpDh/feYe6vs/OmLcOBwqeh.eRajP75mjLGbmi");
+        //System.out.println("Matches? " + matches);
         return new org.springframework.security.core.userdetails.User(
         		 user.getUsername(),
         		    user.getPassword(),

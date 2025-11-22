@@ -52,7 +52,10 @@ public class User implements UserDetails {
 
     private boolean enabled = true;
 
+    @Column(name = "first_login", columnDefinition = "BIT(1)")
     private boolean firstLogin = true;
+    
+    @Column(name = "password_changed_at")
     private LocalDateTime passwordChangedAt;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
