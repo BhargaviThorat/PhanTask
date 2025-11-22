@@ -2,6 +2,7 @@ package com.phantask.authentication.controller;
 
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.phantask.authentication.dto.LoginRequest;
 import com.phantask.authentication.service.AuthService;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -80,8 +83,23 @@ public class AuthController {
      */
     @PostMapping("/refresh-token")
     public ResponseEntity<Map<String, String>> refreshToken(@RequestHeader("Authorization") String authHeader) {
-        String newToken = authService.refreshToken(authHeader);
-        return ResponseEntity.ok(Map.of("token", newToken));
+    	if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid Authorization header"));
+        }
+    	try {
+    		// Remove "Bearer " prefix
+            String refreshToken = authHeader.substring(7);
+            String newToken = authService.refreshToken(refreshToken);
+            return ResponseEntity.ok(Map.of("token", newToken));
+    	}catch(ExpiredJwtException e)
+        {
+    		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Refresh token has expired"));
+        }catch (JwtException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", "Invalid token"));
+        }
+        
     }
 }
 

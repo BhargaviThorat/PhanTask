@@ -48,46 +48,50 @@ public class User implements UserDetails {
     private static final long serialVersionUID = 7198112427597480470L;
 
 	/**
-     * Database primary key for the user.
-     */
+    * Database primary key for the user.
+    */
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long uid;
 
 	/**
-     * Unique username used to log in.
-     */
+    * Unique username used to log in.
+    */
     @Column(nullable = false, unique = true)
     private String username;
 
 	/**
-     * Encoded (hashed) password. Never store plain text.
-     */
+    * Encoded (hashed) password. Never store plain text.
+    */
     @Column(nullable = false)
     private String password;  // ❗make sure password is NOT unique
 
 	/**
-     * Email address for the user. Usually unique.
-     */
+    * Email address for the user. Usually unique.
+    */
     @Column(nullable = false, unique = true)
     private String email;
 
 	/**
-     * Whether the user account is enabled. Use to disable accounts without deleting them.
-     */
+    * Whether the user account is enabled. Use to disable accounts without deleting them.
+    */
     private boolean enabled = true;
 
-	/**
-     * Flag to indicate the user must change their password on first login.
-     */
+
+  /**
+    * Flag to indicate the user must change their password on first login.
+    */
+    @Column(name = "first_login", columnDefinition = "BIT(1)")
     private boolean firstLogin = true;
+    
+    @Column(name = "password_changed_at")
     private LocalDateTime passwordChangedAt;
 
 	/**
-     * Roles assigned to the user. Use a Set to avoid duplicate roles.
-     *
-     * <p>Fetch type and cascading behavior should be chosen based on your access patterns.
-     */
+    * Roles assigned to the user. Use a Set to avoid duplicate roles.
+    *
+    * <p>Fetch type and cascading behavior should be chosen based on your access patterns.
+    */
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(
         name = "user_roles",
@@ -97,11 +101,11 @@ public class User implements UserDetails {
     private Set<Role> roles = new HashSet<>();
 
 	/**
-     * Optional one-to-one link to a richer user profile.
-     *
-     * <p>Cascade type is configurable; if you want the profile to be created/removed with the user,
-     * enable appropriate cascade options.
-     */
+    * Optional one-to-one link to a richer user profile.
+    *
+    * <p>Cascade type is configurable; if you want the profile to be created/removed with the user,
+    * enable appropriate cascade options.
+    */
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserProfile profile;
 

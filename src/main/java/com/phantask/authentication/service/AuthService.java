@@ -1,11 +1,12 @@
 package com.phantask.authentication.service;
 
-import java.util.ArrayList;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 
@@ -41,7 +42,7 @@ public class AuthService {
     //private final PasswordEncoder encoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authManager;
-
+  
     /**
      * Register a new user account.
      *
@@ -141,7 +142,9 @@ public class AuthService {
         UserDetails userDetails = new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                new ArrayList<>()   // or roles from DB
+                user.getRoles().stream()
+                .map(r -> new SimpleGrantedAuthority("ROLE_" + r.getRoleName()))
+                .collect(Collectors.toList())
         );
         
         // 4. Validate token (NOT expired + NOT tampered)
