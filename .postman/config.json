@@ -1,0 +1,16 @@
+{
+  "workspace": {
+    "id": "f9046b32-293f-4386-80f3-9aa20549c7aa"
+  },
+  "entities": {
+    "collections": [
+      "..\\postman\\collections\\phantask.postman_collection.json"
+    ],
+    "environments": [
+      "..\\postman\\environments\\PhanTask.postman_environment.json"
+    ],
+    "specs": [],
+    "flows": [],
+    "globals": []
+  }
+}
