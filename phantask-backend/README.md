@@ -4,7 +4,7 @@ Title: Force password change on first login
 
 Actors:
 ------
- Primary Actor: Admin
+ Primary Actor: User(whose account is created)
  System: Authentication Service
 
 Preconditions:
@@ -22,7 +22,7 @@ Flow:
 
 Postconditions:
 ---------------
- User is either prompted to change password (first login) or successfully logged in.
+User is either prompted to change password (first login) or successfully logged in.
 
 Execute login request with curl:
 curl -v -X POST http://localhost:8080/api/auth/login \
@@ -34,19 +34,7 @@ curl -v -X POST http://localhost:8080/api/auth/login \
 
 Output1:
 -------
-< HTTP/1.1 200 
-< X-Content-Type-Options: nosniff
-< X-XSS-Protection: 0
-< Cache-Control: no-cache, no-store, max-age=0, must-revalidate
-< Pragma: no-cache
-< Expires: 0
-< X-Frame-Options: DENY
-< Content-Type: application/json
-< Transfer-Encoding: chunked
-< Date: Fri, 21 Nov 2025 23:42:07 GMT
- 
 {"requirePasswordChange":true,"message":"Password change required before login"}
-
 
 Output2:
 -------
@@ -55,7 +43,6 @@ Output2:
 "token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2MDI4MiwiZXhwIjoxNzYzNzYzODgyfQ.3lu425aoyskgH5EO9y_HnoqfGckhLqiLT-s1A2N4xrE",
 "requirePasswordChange":false
 }
-
 
 Use Case 2: Refresh JWT Access Token
 ------------------------------------
@@ -166,7 +153,7 @@ Output:
 ------
 "Password changed successfully"
 
-Use Case 4: Create Student Account
+Use Case 4: Create Account
 -----------------------------------
 Title: Admin creates a new student account with a temporary password.
 
@@ -188,13 +175,13 @@ Postconditions:
 
 Description / Flow:
 -------------------
-1.Admin sends a POST request to /api/users/create-student with the student’s email.
+1.Admin sends a POST request to /api/users/create-account with the student’s email.
 2.System checks if the username already exists.
 3.System creates a new User entity with:
-  username from request
-  Password set to Temp@123 (BCrypt encoded)
-  enabled = true
-  firstLogin = true
+  1.username from request
+  2.Password set to Temp@123 (BCrypt encoded)
+  3.enabled = true
+  4.firstLogin = true
 4.System assigns the role STUDENT to the new user.
 5.System saves the user in the database.
 6.System returns a success message along with the temporary password.
@@ -208,3 +195,67 @@ curl -v -X POST http://localhost:8080/api/users/create-student \
 Output:
 -------
 "Student account created successfully. Username: student01, Temporary password: Temp@123"
+
+Use Case 5: Get User's Profile
+------------------------------
+Title : User wants to see his/her profile
+
+Actors:
+-------
+Primary Actor: Authenticated User
+
+Preconditions:
+--------------
+1.User is logged in with a valid JWT token.
+2.UserProfile may or may not exist in the database.
+
+Postconditions:
+--------------
+1.If profile exists → existing profile data is returned.
+2.If profile does NOT exist → system creates an empty profile row and returns default values.
+3.API returns a well-structured UserProfileResponse object.
+
+Description / Flow:
+-------------------
+1.User sends a GET request to /api/users/profile with the JWT token.
+2.System extracts the username from Authentication object.
+3.System checks if the user exists in the users table.
+4.If profile does not exist:
+  1.System creates a new empty UserProfile
+  2.Sets default values ("") for all profile fields
+5.System converts the data into a UserProfileResponse DTO.
+6.System returns:
+  1.Basic user info (id, username, email, roles)
+  2.Profile info (name, phone, department, yearOfStudy, photoUrl)
+
+Execute request with curl:
+curl -v -X GET http://localhost:8080/api/profile \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9..."
+
+Output1:
+--------
+{
+  "userId": 2,
+  "username": "monika",
+  "email": "monika@gmail.com",
+  "role": "STUDENT",
+  "fullName": "Monika Pati",
+  "department": "IT",
+  "phone": "475767877",
+  "photoUrl": "",
+  "yearOfStudy": ""
+}
+
+Output2:
+--------
+{
+  "userId": 2,
+  "username": "monika",
+  "email": "monika@gmail.com",
+  "role": "STUDENT",
+  "fullName": "",
+  "department": "",
+  "phone": "",
+  "photoUrl": "",
+  "yearOfStudy": ""
+}
