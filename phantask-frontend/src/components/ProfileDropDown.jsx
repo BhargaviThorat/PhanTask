@@ -24,7 +24,7 @@ const ProfileDropDown = ({ imageUrl }) => {
   // * Handle user logout logic (! clears session and redirects)
   let handleLogout = () => {
     sessionStorage.clear();
-    window.location.href = "/login";
+    window.location.reload();
   };
 
   // ! Main render: avatar button and animated dropdown menu
