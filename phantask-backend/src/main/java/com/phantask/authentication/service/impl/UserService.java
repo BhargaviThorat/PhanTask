@@ -1,11 +1,10 @@
-package com.phantask.authentication.service;
+package com.phantask.authentication.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +17,7 @@ import com.phantask.authentication.entity.UserProfile;
 import com.phantask.authentication.repository.RoleRepository;
 import com.phantask.authentication.repository.UserProfileRepository;
 import com.phantask.authentication.repository.UserRepository;
+import com.phantask.authentication.service.api.IUserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,13 +32,13 @@ import lombok.extern.slf4j.Slf4j;
  *   <li>Handling password change requests and related validations</li>
  * </ul>
  *
- * <p>Keep security-sensitive behavior (password encoding, validation, audit logging)
+ * <p>Keep security-sensitive behaviour (password encoding, validation, audit logging)
  * inside this service and avoid exposing implementation details to controllers.
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserService implements IUserService {
 
 	 private final UserRepository userRepo;
 	 private final RoleRepository roleRepo;
@@ -66,7 +66,8 @@ public class UserService implements UserDetailsService {
         );
     }
 
-    public String createStudent(String email) {
+	@Override
+    public String createAccount(String email) {
         if (email == null || !email.contains("@")) {
             throw new IllegalArgumentException("Invalid email format");
         }
@@ -94,7 +95,7 @@ public class UserService implements UserDetailsService {
 	  /**
      * Retrieve the profile for the given username.
      *
-     * <p>Expected behavior:
+     * <p>Expected behaviour:
      * <ol>
      *   <li>Look up the user by username</li>
      *   <li>Map persisted user data into a {@link UserProfile} DTO</li>
@@ -105,6 +106,7 @@ public class UserService implements UserDetailsService {
      * @return the {@link UserProfile} for the user
      * @throws RuntimeException if the user cannot be found or another retrieval error occurs
      */
+	@Override
     public UserProfile getProfile(String username) {
         User user = userRepo.findByUsername(username).orElseThrow();
         return user.getProfile();
@@ -113,7 +115,7 @@ public class UserService implements UserDetailsService {
 	/**
      * Update the profile of the specified user.
      *
-     * <p>Expected behavior:
+     * <p>Expected behaviour:
      * <ul>
      *   <li>Validate incoming data from {@link UpdateProfileRequest}</li>
      *   <li>Persist permitted changes to the user profile</li>
@@ -125,6 +127,7 @@ public class UserService implements UserDetailsService {
      * @return a user-facing message describing the result of the update operation
      * @throws RuntimeException if validation or persistence fails
      */
+	@Override
     public String updateProfile(String username, UpdateProfileRequest req) {
         User user = userRepo.findByUsername(username)
             .orElseThrow(() -> new RuntimeException("User not found"));
@@ -145,7 +148,7 @@ public class UserService implements UserDetailsService {
 	/**
      * Change the password for the given user.
      *
-     * <p>Expected behavior:
+     * <p>Expected behaviour:
      * <ol>
      *   <li>Verify the supplied current password against stored credentials</li>
      *   <li>Validate the new password against strength and policy rules</li>
@@ -157,6 +160,7 @@ public class UserService implements UserDetailsService {
      * @return a message indicating whether the password change succeeded
      * @throws RuntimeException if verification fails or the new password does not meet policy
      */
+	@Override
     public String changePassword(String username, PasswordChangeRequest req) {
         User user = userRepo.findByUsername(username)
             .orElseThrow(() -> new RuntimeException("User not found"));
@@ -189,6 +193,7 @@ public class UserService implements UserDetailsService {
                password.matches(".*\\d.*");
     }
     
+    @Override
     public String changePasswordFirstLogin(PasswordChangeRequest req) {
         User user = userRepo.findByUsername(req.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));

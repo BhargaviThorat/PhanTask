@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.phantask.authentication.dto.LoginRequest;
-import com.phantask.authentication.service.AuthService;
+import com.phantask.authentication.service.api.IAuthService;
+import com.phantask.authentication.service.impl.AuthService;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -32,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private final AuthService authService;
+    private final IAuthService authService;
 
     /*@PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody @Valid RegisterRequest req) {

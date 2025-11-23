@@ -15,9 +15,7 @@ import com.phantask.authentication.dto.UpdateProfileRequest;
 
 
 import com.phantask.authentication.entity.UserProfile;
-
-import com.phantask.authentication.service.UserService;
-
+import com.phantask.authentication.service.api.IUserService;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -37,7 +35,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserService userService;
+    private final IUserService userService;
 
     /**
      * Create a new student user.
@@ -48,8 +46,8 @@ public class UserController {
      * @throws RuntimeException if the "STUDENT" role cannot be found in the database
      */
     @PostMapping("/create-student")
-    public ResponseEntity<String> createStudent(@RequestBody RegisterRequest req) {
-        return ResponseEntity.ok(userService.createStudent(req.getEmail()));
+    public ResponseEntity<String> createAccount(@RequestBody RegisterRequest req) {
+        return ResponseEntity.ok(userService.createAccount(req.getEmail()));
     }
     
     @PostMapping("/change-password-first-login")

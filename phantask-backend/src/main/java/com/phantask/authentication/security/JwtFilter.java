@@ -7,8 +7,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.phantask.authentication.service.UserService;
-
+import com.phantask.authentication.service.api.IUserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.FilterChain;
@@ -34,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final UserService userService;
+    private final IUserService userService;
 
 	/**
      * Extract and validate token from the request, and populate SecurityContext on success.
