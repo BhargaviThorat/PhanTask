@@ -4,9 +4,11 @@ import wallpaper from '../../assets/wallpaper-1.jpg';
 import Phanpy_Greet from '../../components/login_signup_components/Phanpy_Greet';
 import LoginForm from '../../components/login_signup_components/LoginForm';
 import ChangePassword from '../../components/login_signup_components/ChangePassword';
+import { useAuth } from '../../context/AuthContext';
 
 const Login = () => {
     const navigate = useNavigate();
+    const { setUser } = useAuth()
 
     // State for first-login flow
     const [showChangePassword, setShowChangePassword] = useState(false);
@@ -14,7 +16,16 @@ const Login = () => {
 
     // Handle successful login from LoginForm
     const handleLoginSuccess = (data, username, requirePasswordChange) => {
-        sessionStorage.setItem('username', username);
+        // console.log("handleLoginSuccess:", { data, username, requirePasswordChange });
+        sessionStorage.setItem("username", username);
+        sessionStorage.setItem("userRole", JSON.stringify(data.role));
+
+        setUser({
+            username,
+            roles: data.role,
+            enabled: true,
+            firstLogin: requirePasswordChange,
+        });
 
         if (requirePasswordChange) {
             setShowChangePassword(true);

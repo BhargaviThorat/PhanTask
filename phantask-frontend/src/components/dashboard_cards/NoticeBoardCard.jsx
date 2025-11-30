@@ -1,36 +1,12 @@
 import React from 'react';
 
 const notices = [
-  {
-    id: 1,
-    date: '25 Oct',
-    message: 'Library will be closed this Friday.',
-  },
-  {
-    id: 2,
-    date: '25 Oct',
-    message: 'Lost & Found: Blue backpack at reception.',
-  },
-  {
-    id: 3,
-    date: '24 Oct',
-    message: 'Annual Sports registrations open now!',
-  },
-  {
-    id: 3,
-    date: '24 Oct',
-    message: 'Annual Sports registrations open now!',
-  },
-  {
-    id: 3,
-    date: '24 Oct',
-    message: 'Annual Sports registrations open now!',
-  },
-  {
-    id: 3,
-    date: '24 Oct',
-    message: 'Annual Sports registrations open now!',
-  },
+  { id: 1, date: '25 Oct', message: 'Library will be closed this Friday.' },
+  { id: 2, date: '25 Oct', message: 'Lost & Found: Blue backpack at reception.' },
+  { id: 3, date: '24 Oct', message: 'Annual Sports registrations open now!' },
+  { id: 4, date: '24 Oct', message: 'Annual Sports registrations open now!' },
+  { id: 5, date: '24 Oct', message: 'Annual Sports registrations open now!' },
+  { id: 6, date: '24 Oct', message: 'Annual Sports registrations open now!' },
 ];
 
 const NoticeBoardCard = () => {
@@ -42,15 +18,15 @@ const NoticeBoardCard = () => {
           Notice Board
         </h2>
 
-                <main className='w-full overflow-y-auto'>
-        <ul className="w-full flex flex-col gap-2">
-          {notices.map(notice => (
-            <li key={notice.id} className="flex items-center">
-              <span className="text-sm text-[#73462a] font-medium w-20 text-center flex-shrink-0">{notice.date}</span>
-              <span className="ml-3 text-sm text-[#522320]">{notice.message}</span>
-            </li>
-          ))}
-        </ul>
+        <main className='w-full overflow-y-auto'>
+          <ul className="w-full flex flex-col gap-2">
+            {notices.map(notice => (
+              <li key={notice.id} className="flex items-center">
+                <span className="text-sm text-[#73462a] font-medium w-20 text-center flex-shrink-0">{notice.date}</span>
+                <span className="ml-3 text-sm text-[#522320]">{notice.message}</span>
+              </li>
+            ))}
+          </ul>
         </main>
       </span>
     </div>

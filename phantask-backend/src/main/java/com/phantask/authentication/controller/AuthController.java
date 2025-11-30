@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -67,6 +68,8 @@ public class AuthController {
 		return ResponseEntity.ok(response);
 	}
 
+	
+	
 	/**
 	 * Logout the current user.
 	 *
@@ -80,11 +83,12 @@ public class AuthController {
 	 *                   &lt;token&gt;")
 	 * @return a ResponseEntity containing a success message
 	 */
-	@PostMapping("/logout")
-	public ResponseEntity<String> logout(@RequestHeader("Authorization") String authHeader) {
-		authService.logout(authHeader);
-		return ResponseEntity.ok("Logged out successfully");
-	}
+	/*
+	 * @PostMapping("/logout") public ResponseEntity<String>
+	 * logout(@RequestHeader("Authorization") String authHeader) {
+	 * authService.logout(authHeader); return
+	 * ResponseEntity.ok("Logged out successfully"); }
+	 */
 
 	/**
 	 * Refresh an authentication token.
@@ -115,4 +119,49 @@ public class AuthController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Invalid token"));
 		}
 	}
+	
+	/**
+     * Resolve the identity associated with the supplied {@code Authorization}
+     * header.
+     *
+     * <p>
+     * This endpoint is intended for single‑page applications that need to
+     * validate a stored access token on startup (for example, after a page
+     * refresh) and recover lightweight user information. The method:
+     * </p>
+     * <ul>
+     *   <li>Expects a header {@code Authorization: Bearer &lt;jwt&gt;}</li>
+     *   <li>Parses and validates the token using {@link AuthService}</li>
+     *   <li>Returns a small JSON object with fields such as
+     *       {@code username}, {@code roles}, and {@code enabled}</li>
+     * </ul>
+     *
+     * @param authHeader the HTTP {@code Authorization} header containing a
+     *                   bearer token
+     * @return {@code 200 OK} with basic user details if the token is valid;
+     *         {@code 401 Unauthorized} if the token is missing, invalid or
+     *         expired
+     */
+    @GetMapping("/me")
+    public ResponseEntity<?> me(
+            @RequestHeader(name = "Authorization", required = false) String authHeader) {
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Missing or invalid Authorization header"));
+        }
+
+        String token = authHeader.substring(7);
+
+        try {
+            Map<String, Object> profile = authService.getCurrentUserProfile(token);
+            return ResponseEntity.ok(profile);
+        } catch (ExpiredJwtException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Token expired"));
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Invalid token"));
+        }
+    }
 }

@@ -28,7 +28,7 @@ const LoginForm = ({ onLoginSuccess }) => {
 
     try {
       const response = await api.login(formData.username, formData.password);
-      console.log('API Response:', response.data);
+      // console.log('API Response:', response.data);
       const { token, refreshToken, role, requirePasswordChange } = response.data;
 
       sessionStorage.setItem('authToken', token);

@@ -142,10 +142,48 @@ public class AuthService implements IAuthService {
      * @param token the token string to invalidate or user session to terminate
      * @return a message indicating successful logout
      */
-    @Override
-    public String logout(String token) {
-        // In stateless JWT, we simply return success.
-        // Real invalidation requires a token blacklist (optional).
-        return "Logged out successfully";
+	/*
+	 * @Override public String logout(String token) { // In stateless JWT, we simply
+	 * return success. // Real invalidation requires a token blacklist (optional).
+	 * return "Logged out successfully"; }
+	 */
+    
+    /**
+     * Resolve basic profile information for the user associated with the
+     * provided JWT.
+     *
+     * <p>
+     * This method is typically invoked by a {@code /api/auth/me} endpoint
+     * to let a client verify that its stored access token is still valid
+     * and belongs to an active user. The method will:
+     * </p>
+     * <ol>
+     *   <li>Extract the username from the supplied JWT</li>
+     *   <li>Load the corresponding {@link User} entity</li>
+     *   <li>Return a minimal map of profile attributes that the SPA can
+     *       cache in memory (for example: username and roles)</li>
+     * </ol>
+     *
+     * @param token the raw JWT string (without the {@code Bearer } prefix)
+     * @return a map containing lightweight user profile data such as
+     *         {@code username} and {@code roles}
+     * @throws RuntimeException if the token is invalid, expired or the user
+     *                          cannot be found
+     */
+    public Map<String, Object> getCurrentUserProfile(String token) {
+        // extract username from token
+        String username = jwtUtil.extractUsername(token);
+
+        User user = userRepo.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return Map.of(
+                "username", user.getUsername(),
+                "roles", user.getRoles().stream()
+                        .map(Role::getRoleName)
+                        .collect(Collectors.toSet()),
+                "enabled", user.isEnabled(),
+                "firstLogin", user.isFirstLogin()
+        );
     }
 }

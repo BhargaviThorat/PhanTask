@@ -29,25 +29,27 @@ api.interceptors.response.use(
 );
 
 export const apiService = {
-  // AUTH - MATCHES BACKEND
+  // * AUTH - MATCHES BACKEND
   login: (username, password) =>
     api.post("/auth/login", { username, password }),
 
   // PUBLIC ENDPOINT - Bypass token interceptor
   changePasswordFirstLogin: async (oldPassword, newPassword, username) => {
-    // ← ADD username param
     const publicApi = axios.create({
       baseURL: API_BASE_URL,
       headers: { "Content-Type": "application/json" },
     });
     return publicApi.post("/users/change-password-first-login", {
-      username, // ← Now defined from parameter
+      username,
       oldPassword,
       newPassword,
     });
   },
 
-  // DASHBOARD DATA (protected - uses token)
+  // USER INFO
+  getCurrentUser: () => api.get("/auth/me"),
+
+  // * DASHBOARD DATA (protected - uses token)
   getAssignedTasks: () => api.get("/tasks/assigned"),
   getAttendance: () => api.get("/attendance/current"),
   getSchedule: () => api.get("/schedule/today"),

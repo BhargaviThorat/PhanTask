@@ -14,100 +14,103 @@ import ForgotPassword from './components/login_signup_components/ForgotPassword'
 import AssignedTasks from './pages/AssignedTasks';
 import Schedule from './pages/Schedule';
 import { ApiProvider } from './context/ApiContext';
+import { AuthProvider } from './context/AuthContext';
 
 
 const App = () => {
   return (
     <BrowserRouter>
       <ApiProvider>
-        <Toaster position="top-center" />
-        <Routes>
-          {/* Public route */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
+        <AuthProvider>
+          <Toaster position="top-center" />
+          <Routes>
+            {/* Public route */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
 
-          {/* Private routes */}
-          <Route
-            path="/"
-            element={
-              <PrivateRoute>
-                <SideBar>
-                  <Dashboard />
-                </SideBar>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/tasks"
-            element={
-              <PrivateRoute>
-                <SideBar>
-                  <AssignedTasks />
-                </SideBar>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/attendance"
-            element={
-              <PrivateRoute>
-                <SideBar>
-                  <Attendance />
-                </SideBar>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/socialhub"
-            element={
-              <PrivateRoute>
-                <SideBar>
-                  <SocialHub />
-                </SideBar>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/schedule"
-            element={
-              <PrivateRoute>
-                <SideBar>
-                  <Schedule />
-                </SideBar>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/helpline"
-            element={
-              <PrivateRoute>
-                <SideBar>
-                  <Helpline />
-                </SideBar>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/feedback"
-            element={
-              <PrivateRoute>
-                <SideBar>
-                  <Feedback />
-                </SideBar>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <PrivateRoute>
-                <SideBar>
-                  <Settings />
-                </SideBar>
-              </PrivateRoute>
-            }
-          />
-        </Routes>
+            {/* Private routes */}
+            <Route
+              path="/"
+              element={
+                <PrivateRoute>
+                  <SideBar>
+                    <Dashboard />
+                  </SideBar>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/tasks"
+              element={
+                <PrivateRoute>
+                  <SideBar>
+                    <AssignedTasks />
+                  </SideBar>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/attendance"
+              element={
+                <PrivateRoute>
+                  <SideBar>
+                    <Attendance />
+                  </SideBar>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/socialhub"
+              element={
+                <PrivateRoute>
+                  <SideBar>
+                    <SocialHub />
+                  </SideBar>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/schedule"
+              element={
+                <PrivateRoute>
+                  <SideBar>
+                    <Schedule />
+                  </SideBar>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/helpline"
+              element={
+                <PrivateRoute>
+                  <SideBar>
+                    <Helpline />
+                  </SideBar>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/feedback"
+              element={
+                <PrivateRoute>
+                  <SideBar>
+                    <Feedback />
+                  </SideBar>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <PrivateRoute>
+                  <SideBar>
+                    <Settings />
+                  </SideBar>
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </AuthProvider>
       </ApiProvider>
     </BrowserRouter>
   );
