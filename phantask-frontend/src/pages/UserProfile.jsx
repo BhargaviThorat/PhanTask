@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import mascot from "../assets/Mascot-Phantask.png";
 import LoadingSkeleton from "../components/LoadingSkeleton";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const UserProfile = ({ onEdit }) => {
+const UserProfile = () => {
     const { user, loading, refreshProfile } = useAuth();
     const location = useLocation();
 
@@ -41,6 +41,7 @@ const UserProfile = ({ onEdit }) => {
     }
 
     // console.log("Rendering UserProfile with user:", user);
+    let navigate = useNavigate();
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-orange-50 p-3 md:p-4">
@@ -155,7 +156,7 @@ const UserProfile = ({ onEdit }) => {
                     <div className="flex justify-center md:justify-end pt-2 border-t border-[#E7B9AE]/30">
                         <button
                             type="button"
-                            onClick={onEdit}
+                            onClick={() => { navigate("/update-profile") }}
                             className="w-full md:w-auto hover:scale-95 transition-transform duration-300 bg-red-700 hover:bg-red-800 text-white font-semibold py-2.5 px-6 rounded-lg shadow flex items-center justify-center gap-2"
                         >
                             <i className="fa-solid fa-pen"></i>
@@ -163,8 +164,8 @@ const UserProfile = ({ onEdit }) => {
                         </button>
                     </div>
                 </section>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

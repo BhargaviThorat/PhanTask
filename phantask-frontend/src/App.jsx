@@ -16,6 +16,7 @@ import Schedule from './pages/Schedule';
 import { ApiProvider } from './context/ApiContext';
 import { AuthProvider } from './context/AuthContext';
 import UserProfile from './pages/UserProfile';
+import UpdateProfile from './pages/UpdateProfile';
 
 
 const App = () => {
@@ -116,6 +117,16 @@ const App = () => {
                 <PrivateRoute>
                   <SideBar>
                     <UserProfile />
+                  </SideBar>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/update-profile"
+              element={
+                <PrivateRoute>
+                  <SideBar>
+                    <UpdateProfile />
                   </SideBar>
                 </PrivateRoute>
               }
