@@ -1,5 +1,7 @@
 package com.phantask.authentication.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Data;
 
 /**
@@ -12,9 +14,9 @@ import lombok.Data;
  */
 @Data
 public class UpdateProfileRequest {
-    private String fullName;
-    private String department;
-    private String phone;
-    private String photoUrl;
-    private String yearOfStudy;
+	private String fullName;
+	private String department;
+	private String phone;
+	private MultipartFile profilePic;
+	private String yearOfStudy;
 }

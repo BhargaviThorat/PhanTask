@@ -3,11 +3,12 @@ package com.phantask.authentication.controller;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -103,10 +104,14 @@ public class UserController {
 	 *             update
 	 * @return 200 OK with a message describing the result of the update operation
 	 */
-	@PutMapping("/update-profile")
-	public ResponseEntity<String> updateProfile(Authentication auth, @RequestBody UpdateProfileRequest req) {
-		return ResponseEntity.ok(userService.updateProfile(auth.getName(), req));
+	@PostMapping(value = "/update-profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<String> updateProfile(
+	        Authentication auth,
+	        @ModelAttribute UpdateProfileRequest req) {
+
+	    return ResponseEntity.ok(userService.updateProfile(auth.getName(), req));
 	}
+
 
 	/**
 	 * Change the password for the currently authenticated user.

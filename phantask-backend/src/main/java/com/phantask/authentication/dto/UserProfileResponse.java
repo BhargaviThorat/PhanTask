@@ -25,6 +25,6 @@ public class UserProfileResponse {
 	private String fullName;
 	private String department;
 	private String phone;
-	private String photoUrl;
+	private String profilePic; // base64 string or null
 	private String yearOfStudy;
 }
