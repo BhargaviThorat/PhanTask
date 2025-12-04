@@ -171,7 +171,7 @@ public class UserService implements IUserService {
                 defaultIfNull(profile.getDepartment()),
                 defaultIfNull(profile.getPhone()),
                 base64Pic,   // FIELD for Profile Pic
-                defaultIfNull(profile.getYearOfStudy())    
+                defaultIfNull(profile.getYearOfStudy()),    
                 dob     
         );
     }
