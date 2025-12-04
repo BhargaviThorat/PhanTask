@@ -42,13 +42,6 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 	private final IAuthService authService;
 
-	/*
-	 * @PostMapping("/register") public ResponseEntity<String>
-	 * register(@RequestBody @Valid RegisterRequest req) {
-	 * System.out.println("Register end-point hit: " + req.getUsername()); return
-	 * ResponseEntity.ok(authService.register(req)); }
-	 */
-
 	/**
 	 * Authenticate a user using the provided credentials.
 	 *
@@ -68,41 +61,18 @@ public class AuthController {
 		return ResponseEntity.ok(response);
 	}
 
-	
-	
-	/**
-	 * Logout the current user.
-	 *
-	 * <p>
-	 * Clients should normally remove the token on the client-side. This endpoint is
-	 * provided for optional server-side logout handling such as token blacklisting
-	 * or auditing.
-	 * </p>
-	 *
-	 * @param authHeader the value of the Authorization header (e.g. "Bearer
-	 *                   &lt;token&gt;")
-	 * @return a ResponseEntity containing a success message
-	 */
-	/*
-	 * @PostMapping("/logout") public ResponseEntity<String>
-	 * logout(@RequestHeader("Authorization") String authHeader) {
-	 * authService.logout(authHeader); return
-	 * ResponseEntity.ok("Logged out successfully"); }
-	 */
 
-	/**
-	 * Refresh an authentication token.
+	/*
+	 * Handles refresh-token requests.
 	 *
-	 * <p>
-	 * Clients should call this endpoint with the current authorization header
-	 * (usually containing a refresh token or the existing token depending on
-	 * implementation). The service will validate and return a refreshed token.
-	 * </p>
+	 * Steps:
+	 * 1. Verify that the Authorization header exists and starts with "Bearer ".
+	 * 2. Extract the refresh token from the header.
+	 * 3. Pass the token to the service to validate it and generate a new access token.
+	 * 4. Return the new access token to the client.
 	 *
-	 * @param authHeader the value of the Authorization header (e.g. "Bearer
-	 *                   &lt;refresh-token&gt;")
-	 * @return a ResponseEntity containing a JSON object with the new token under
-	 *         the key "token"
+	 * If the refresh token is expired or invalid,
+	 * the user must log in again.
 	 */
 	@PostMapping("/refresh-token")
 	public ResponseEntity<Map<String, String>> refreshToken(@RequestHeader("Authorization") String authHeader) {
@@ -110,9 +80,9 @@ public class AuthController {
 			return ResponseEntity.badRequest().body(Map.of("error", "Invalid Authorization header"));
 		}
 		try {
-			String refreshToken = authHeader.substring(7);	// Remove "Bearer " prefix
+			String refreshToken = authHeader.substring(7);
 			String newToken = authService.refreshToken(refreshToken);
-			return ResponseEntity.ok(Map.of("token", newToken));
+			return ResponseEntity.ok(Map.of("accessToken", newToken));
 		} catch (ExpiredJwtException e) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Refresh token has expired"));
 		} catch (JwtException ex) {

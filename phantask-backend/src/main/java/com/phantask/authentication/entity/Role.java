@@ -1,10 +1,16 @@
 package com.phantask.authentication.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -49,6 +55,24 @@ public class Role {
      * it; be consistent across the application.
      * </p>
      */
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String roleName;
+    
+    @ManyToMany(mappedBy = "roles")
+    @JsonIgnore
+    private Set<User> users = new HashSet<>();
+    
+    //DEBUG
+    @Override
+    public String toString() {
+        return "Role{id=" + rid + ", name='" + roleName + "'}";
+    }
+
+    //If you need to fetch users from roles
+    public void addUser(User user) {
+        this.users.add(user);
+        user.getRoles().add(this);
+    }
+
+
 }

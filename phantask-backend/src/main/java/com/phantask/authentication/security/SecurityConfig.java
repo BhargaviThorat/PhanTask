@@ -12,31 +12,32 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-/**
- * Central Spring Security configuration class.
- *
- * <p>
- * Responsible for configuring authentication and authorization rules for the
- * application. Typical responsibilities include:
- * <ul>
- *   <li>Defining which endpoints are publicly accessible and which require
- *       authentication</li>
- *   <li>Registering authentication providers or UserDetailsService
- *       implementations</li>
- *   <li>Configuring HTTP security settings such as CSRF, CORS, session
- *       management, and filters</li>
- * </ul>
- * </p>
- *
- * <p>
- * Keep this class focused on wiring security components; business logic should
- * remain in services.
- * </p>
- */
+/*
+Main Spring Security configuration class.
+
+What this file does:
+- Defines which APIs are public and which require authentication.
+- Registers the JWT filter so every request is checked for a valid token.
+- Turns off sessions (we use JWT → stateless authentication).
+- Enables CORS and disables CSRF for APIs.
+*/
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+	 /*
+    Security filter chain that controls all HTTP security behaviour.
+
+    Key points:
+    1. CORS is enabled so frontend apps (React/Angular) can call the backend.
+    2. CSRF is disabled since this is a stateless REST API.
+    3. Public endpoints:
+         - /api/auth/** → login, refresh-token, etc.
+         - /api/users/change-password-first-login → user changes password before login.
+    4. All other requests require a valid JWT.
+    5. The jwtFilter is placed before UsernamePasswordAuthenticationFilter
+       so token validation happens early in the request lifecycle.
+   */
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
         http

@@ -1,8 +1,10 @@
 package com.phantask.authentication.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import jakarta.validation.constraints.Past;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,4 +29,6 @@ public class UserProfileResponse {
 	private String phone;
 	private String photoUrl;
 	private String yearOfStudy;
+    @Past(message = "DOB must be in the past")
+    private LocalDate dob;
 }

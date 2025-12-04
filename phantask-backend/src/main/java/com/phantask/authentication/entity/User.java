@@ -24,8 +24,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -66,6 +69,7 @@ public class User implements UserDetails {
     /**
      * Unique username used to log in.
      */
+    @NotBlank
     @Column(nullable = false, unique = true)
     private String username;
 
@@ -74,11 +78,12 @@ public class User implements UserDetails {
      */
     @Column(nullable = false)
     @JsonIgnore
-    private String password; // ❗make sure password is NOT unique
+    private String password;
 
     /**
      * Email address for the user. Usually unique.
      */
+    @Email
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -96,16 +101,34 @@ public class User implements UserDetails {
 
     @Column(name = "password_changed_at")
     private LocalDateTime passwordChangedAt;
+    
+    //added audit fields
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
     /**
      * Roles assigned to the user. Use a Set to avoid duplicate roles.
      *
      * <p>
-     * Fetch type and cascading behavior should be chosen based on your access
+     * Fetch type and cascading behaviour should be chosen based on your access
      * patterns.
      * </p>
      */
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "uid"), inverseJoinColumns = @JoinColumn(name = "rid"))
     private Set<Role> roles = new HashSet<>();
 
@@ -120,6 +143,27 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonBackReference
     private UserProfile profile;
+    
+    //Helper methods
+    public void setProfile(UserProfile profile) {
+        this.profile = profile;
+        if (profile != null) {
+            profile.setUser(this);
+        }
+    }
+
+    public void addRole(Role role) {
+        this.roles.add(role);
+        // Only if Role has a users set (bi-directional)
+        role.getUsers().add(this);
+    }
+
+    public void removeRole(Role role) {
+        this.roles.remove(role);
+        // Only if bi-directional
+        role.getUsers().remove(this);
+    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

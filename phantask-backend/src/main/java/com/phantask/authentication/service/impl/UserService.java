@@ -1,6 +1,8 @@
 package com.phantask.authentication.service.impl;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -122,21 +124,8 @@ public class UserService implements IUserService {
         return value == null ? "" : value;
     }
 
-    /**
-     * Retrieve the profile for the given username.
-     *
-     * <p>
-     * Expected behaviour:
-     * <ol>
-     *   <li>Look up the user by username</li>
-     *   <li>Map persisted user data into a {@link UserProfile} DTO</li>
-     *   <li>Return the DTO or throw an appropriate exception if not found</li>
-     * </ol>
-     * </p>
-     *
-     * @param username the username whose profile should be retrieved
-     * @return the {@link UserProfile} for the user
-     * @throws RuntimeException if the user cannot be found or another retrieval error occurs
+    /*
+     * Use Case: Display Dashboard/Profile page of the authenticated User
      */
     @Override
     @Transactional
@@ -159,6 +148,9 @@ public class UserService implements IUserService {
                 .map(Role::getRoleName)
                 .collect(Collectors.toSet());
 
+        LocalDate dob = Optional.ofNullable(profile.getDob())
+        		.orElse(LocalDate.of(1900, 1, 1));
+        
         return new UserProfileResponse(
                 user.getUid(),
                 user.getUsername(),
@@ -172,7 +164,9 @@ public class UserService implements IUserService {
                 defaultIfNull(profile.getDepartment()),
                 defaultIfNull(profile.getPhone()),
                 defaultIfNull(profile.getPhotoUrl()),
-                defaultIfNull(profile.getYearOfStudy())
+                defaultIfNull(profile.getYearOfStudy()),
+                dob
+
         );
     }
 
@@ -199,7 +193,7 @@ public class UserService implements IUserService {
 
         UserProfile profile = profileRepo.findByUser(user).orElseGet(() -> {
             UserProfile p = new UserProfile();
-            p.setUser(user);  // REQUIRED for shared PK
+            p.setUser(user); 
             return p;
         });
 
@@ -208,82 +202,97 @@ public class UserService implements IUserService {
         profile.setDepartment(req.getDepartment());
         profile.setPhotoUrl(req.getPhotoUrl());
         profile.setYearOfStudy(req.getYearOfStudy());
-
+        profile.setDob(req.getDob());
+        
         profileRepo.save(profile);
         return "Profile updated successfully";
     }
 
-    /**
-     * Change the password for the given user.
-     *
-     * <p>
-     * Expected behaviour:
-     * <ol>
-     *   <li>Verify the supplied current password against stored credentials</li>
-     *   <li>Validate the new password against strength and policy rules</li>
-     *   <li>Encode and persist the new password; clear first-login flag if applicable</li>
-     * </ol>
-     * </p>
-     *
-     * @param username the username of the user requesting the password change
-     * @param req      the {@link PasswordChangeRequest} containing old and new passwords
-     * @return a message indicating whether the password change succeeded
-     * @throws RuntimeException if verification fails or the new password does not meet policy
-     */
+  
+    /* 
+    This method changes the password for a logged-in user via Forget Password.
+
+    Steps performed:
+    1. Look up the user in the database using the username.
+       If the user does not exist, stop and throw an error.
+    2. Check whether the old password entered by the user matches 
+       the stored password. If it does not match, an error is thrown.
+    3. Validate the new password to make sure it follows all password 
+       rules (strength, not same as old password, etc.). If invalid, 
+       an error is thrown.
+    4. If everything is valid, encode the new password and save it 
+       to the database. Also clear any “first login” flag if needed.
+    5. Finally, return a success message.
+    */
     @Override
     public String changePassword(String username, PasswordChangeRequest req) {
         User user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!passwordEncoder.matches(req.getOldPassword(), user.getPassword())) {
-            throw new RuntimeException("Old password is incorrect");
-        }
+        validateOldPassword(req.getOldPassword(), user.getPassword());
+        validateNewPassword(req.getNewPassword(), user.getPassword());
 
-        if (passwordEncoder.matches(req.getNewPassword(), user.getPassword())) {
-            throw new RuntimeException("New password cannot be same as old");
-        }
-
-        if (!isValidPassword(req.getNewPassword())) {
-            throw new RuntimeException("Password must be 8+ chars, contain upper, lower, digit");
-        }
-
-        user.setPassword(passwordEncoder.encode(req.getNewPassword()));
-        user.setFirstLogin(false);  // mark as changed
-        user.setPasswordChangedAt(LocalDateTime.now());
-
-        userRepo.save(user);
+        updatePassword(user, req.getNewPassword());
 
         return "Password changed successfully";
     }
 
+    //To check current password strength
     private boolean isValidPassword(String password) {
         return password.length() >= 8
                 && password.matches(".*[A-Z].*")
                 && password.matches(".*[a-z].*")
                 && password.matches(".*\\d.*");
     }
+    
+    //To match old password
+    private void validateOldPassword(String oldPassword, String encodedPassword) {
+        if (!passwordEncoder.matches(oldPassword, encodedPassword)) {
+            throw new RuntimeException("Old password is incorrect");
+        }
+    }
 
+    //To check new password strength and match it with old password
+    private void validateNewPassword(String newPassword, String encodedPassword) {
+        if (!isValidPassword(newPassword)) {
+            throw new RuntimeException("Password must be 8+ chars, contain upper, lower, digit");
+        }
+        if (passwordEncoder.matches(newPassword, encodedPassword)) {
+            throw new RuntimeException("New password cannot be same as old");
+        }
+    }
+
+    //To finally update the user with new password
+    private void updatePassword(User user, String newPassword) {
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setFirstLogin(false);
+        user.setPasswordChangedAt(LocalDateTime.now());
+        userRepo.save(user);
+    }
+
+    /* 
+    This method is used to change the password during a user's first login(unauthenticated).
+
+    What it does:
+    1. Fetch the user from the database using the username provided
+       inside the request object. If the user does not exist, an error is thrown.
+    2. Verify that the old password provided matches the user's current 
+       stored password. If it doesn't match, the process stops with an error.
+    3. Check the new password against password rules and ensure 
+       it is valid and not the same as the old password.
+    4. If all validations pass, encode and update the password in the database.
+       This step usually also removes the "first login" restriction 
+       so the user can continue using the system normally.
+    5. Return a message confirming the password change.
+    */
     @Override
     public String changePasswordFirstLogin(PasswordChangeRequest req) {
         User user = userRepo.findByUsername(req.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!passwordEncoder.matches(req.getOldPassword(), user.getPassword())) {
-            return "Old password is incorrect";
-        }
-        if (!isValidPassword(req.getNewPassword())) {
-            return "Password must be 8+ chars, contain upper, lower, digit";
-        }
-        // prevent same password
-        if (passwordEncoder.matches(req.getNewPassword(), user.getPassword())) {
-            return "New password cannot be same as old";
-        }
+        validateOldPassword(req.getOldPassword(), user.getPassword());
+        validateNewPassword(req.getNewPassword(), user.getPassword());
 
-        log.info("Encoding and updating password for {}", req.getUsername());
-        user.setPassword(passwordEncoder.encode(req.getNewPassword()));
-        user.setFirstLogin(false);
-        user.setPasswordChangedAt(LocalDateTime.now());
-
-        userRepo.save(user);
+        updatePassword(user, req.getNewPassword());
         return "Password changed successfully";
     }
 }

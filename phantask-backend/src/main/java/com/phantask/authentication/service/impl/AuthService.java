@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -46,39 +47,35 @@ public class AuthService implements IAuthService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authManager;
 
-    /**
-     * Authenticate a user using the provided credentials.
+    /*
+     * Handles user login requests.
      *
-     * <p>
-     * Expected behaviour:
-     * <ol>
-     *   <li>Validate the supplied credentials (username/password)</li>
-     *   <li>On success, generate and return an access token (and optionally a refresh
-     *       token)</li>
-     *   <li>On failure, throw an appropriate authentication exception</li>
-     * </ol>
-     * </p>
+     * Steps:
+     * 1. Look up the user by username using Optional.
+     * 2. If the user is not found, throw a generic BadCredentialsException.
+     * 3. Authenticate the user's password using AuthenticationManager.
+     * 4. If this is the user's first login, require a password change and return a message.
+     * 5. If login is successful, generate an access token and a refresh token.
+     * 6. Return the tokens, roles, and first-login flag in the response map.
      *
-     * @param req DTO containing username and password (and optional remember-me)
-     * @return a map containing tokens, roles, and password change requirement
-     * @throws org.springframework.security.core.AuthenticationException if authentication fails
+     * Note:
+     * - Roles are included in the access token for authorization purposes.
+     * - Refresh tokens are long-lived and do not contain roles.
+     * - The client should use the refresh token to get a new access token when it expires.
      */
     @Override
     public Map<String, Object> login(LoginRequest req) {
 
         User user = userRepo.findByUsername(req.getUsername())
-                .orElseThrow(() -> new RuntimeException("Invalid username or password"));
+                .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
 
-        // Authenticate credentials
         authManager.authenticate(new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword()));
 
-        // If first login → force password change
         if (user.isFirstLogin()) {
             return Map.of("requirePasswordChange", true, "message", "Password change required before login");
         }
 
-        // Normal login → generate token
-        String token = jwtUtil.generateToken(user);
+        String token = jwtUtil.generateAccessToken(user);
         String refreshToken = jwtUtil.generateRefreshToken(user);
 
         return Map.of(
@@ -107,11 +104,15 @@ public class AuthService implements IAuthService {
     @Override
     public String refreshToken(String refreshToken) {
 
-        // 1. Extract username
         String username = jwtUtil.extractUsername(refreshToken);
-        // 2. Load user
+        
+        // Ensure this is a refresh token and not access-token
+        if (!jwtUtil.isRefreshToken(refreshToken)) {
+            throw new RuntimeException("Invalid token type. Only refresh tokens are allowed.");
+        }
+        
         User user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
-        // 3. Convert to UserDetails for validation
+
         UserDetails userDetails = new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
@@ -119,34 +120,13 @@ public class AuthService implements IAuthService {
                         .map(r -> new SimpleGrantedAuthority("ROLE_" + r.getRoleName()))
                         .collect(Collectors.toList())
         );
-        // 4. Validate token (not expired and not tampered)
+
         if (!jwtUtil.isTokenValid(refreshToken, userDetails)) {
             throw new RuntimeException("Refresh token expired. Please login again.");
         }
-        // 5. Generate new access token
-        return jwtUtil.generateToken(user);
-    }
 
-    /**
-     * Invalidate authentication state for a user (logout).
-     *
-     * <p>
-     * Typical tasks:
-     * <ul>
-     *   <li>Revoke refresh tokens associated with the user/session</li>
-     *   <li>Perform audit/logging if required</li>
-     *   <li>Clear server-side session state if sessions are used</li>
-     * </ul>
-     * </p>
-     *
-     * @param token the token string to invalidate or user session to terminate
-     * @return a message indicating successful logout
-     */
-	/*
-	 * @Override public String logout(String token) { // In stateless JWT, we simply
-	 * return success. // Real invalidation requires a token blacklist (optional).
-	 * return "Logged out successfully"; }
-	 */
+        return jwtUtil.generateAccessToken(user);
+    }
     
     /**
      * Resolve basic profile information for the user associated with the
