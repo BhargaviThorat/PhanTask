@@ -29,7 +29,7 @@ const AssignedTasks = () => {
     fetchTasks();
   }, [user]);
 
-  console.log(tasks);
+  // console.log(tasks);
 
 
   if (loading || taskLoading) return <div>Loading tasks...</div>;

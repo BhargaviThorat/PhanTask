@@ -7,6 +7,7 @@ import FeedbackSummaryCard from "../components/dashboard_cards/FeedbackSummaryCa
 import AssignedTasksCard from "../components/dashboard_cards/AssignedTasksCard";
 import ScheduleCard from "../components/dashboard_cards/ScheduleCard.jsx";
 import { useAuth } from '../context/AuthContext';
+import PhanAI from "../components/PhanAI.jsx";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -86,7 +87,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-
+         <PhanAI />
       </div>
     </div>
   );
