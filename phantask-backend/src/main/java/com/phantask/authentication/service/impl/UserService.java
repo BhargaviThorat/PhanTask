@@ -3,6 +3,7 @@ package com.phantask.authentication.service.impl;
 import java.time.LocalDate;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -13,11 +14,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.phantask.authentication.dto.AccountCreationResponse;
 import com.phantask.authentication.dto.PasswordChangeRequest;
 import com.phantask.authentication.dto.UpdateProfileRequest;
 import com.phantask.authentication.dto.UserProfileResponse;
+import com.phantask.authentication.dto.UserResponse;
 import com.phantask.authentication.entity.Role;
 import com.phantask.authentication.entity.User;
 import com.phantask.authentication.entity.UserProfile;
@@ -26,7 +29,6 @@ import com.phantask.authentication.repository.UserProfileRepository;
 import com.phantask.authentication.repository.UserRepository;
 import com.phantask.authentication.service.api.IUserService;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -302,5 +304,39 @@ public class UserService implements IUserService {
 
         updatePassword(user, req.getNewPassword());
         return "Password changed successfully";
+    }
+
+	@Override
+	@PreAuthorize("hasRole('ADMIN')")
+	public void deactivateUser(Long userId) {
+		User user = userRepo.findByUidAndEnabledTrue(userId)
+                .orElseThrow(() -> new RuntimeException("Active user not found: " + userId));
+
+        user.setEnabled(false);
+        user.setDeactivatedAt(LocalDateTime.now());
+
+        userRepo.save(user);		
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+    @PreAuthorize("hasRole('ADMIN')")
+	public List<UserResponse> getAllActiveUsers() {
+		
+		return userRepo.findAllByEnabledTrue().stream()
+                .map(this::mapToResponse)
+                .toList();
+	}
+	
+	private UserResponse mapToResponse(User user) {
+        return new UserResponse(
+                user.getUid(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getRoles().stream()
+                        .map(Role::getRoleName)
+                        .toList(),
+                user.isEnabled()
+        );
     }
 }

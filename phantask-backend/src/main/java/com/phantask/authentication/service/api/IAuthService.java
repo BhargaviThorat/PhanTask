@@ -7,8 +7,6 @@ import com.phantask.authentication.dto.LoginRequest;
 public interface IAuthService {
 	Map<String, Object> login(LoginRequest req);
 
-	/* String logout(String authHeader); */
-
 	String refreshToken(String refreshToken);
 	
 	public Map<String, Object> getCurrentUserProfile(String token);

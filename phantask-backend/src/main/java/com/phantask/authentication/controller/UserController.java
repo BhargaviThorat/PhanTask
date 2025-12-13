@@ -1,5 +1,6 @@
 package com.phantask.authentication.controller;
 
+import java.util.List;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -8,7 +9,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +21,7 @@ import com.phantask.authentication.dto.PasswordChangeRequest;
 import com.phantask.authentication.dto.RegisterRequest;
 import com.phantask.authentication.dto.UpdateProfileRequest;
 import com.phantask.authentication.dto.UserProfileResponse;
+import com.phantask.authentication.dto.UserResponse;
 import com.phantask.authentication.entity.UserProfile;
 import com.phantask.authentication.service.api.IUserService;
 import lombok.RequiredArgsConstructor;
@@ -79,6 +83,19 @@ public class UserController {
 	    }
 	}
 
+    @PutMapping("/{userId}/deactivate")
+    public ResponseEntity<?> deactivateUser(@PathVariable Long userId) {
+        userService.deactivateUser(userId);
+        return ResponseEntity.ok(
+                Map.of("message", "User account deactivated successfully")
+        );
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<List<UserResponse>> getAllActiveUsers() {
+        return ResponseEntity.ok(userService.getAllActiveUsers());
+    }
+    
 	@PostMapping("/change-password-first-login")
 	public ResponseEntity<String> changePasswordFirstLogin(@RequestBody PasswordChangeRequest req) {
 		return ResponseEntity.ok(userService.changePasswordFirstLogin(req));

@@ -1,13 +1,10 @@
 package com.phantask.authentication.service.impl;
 
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.phantask.authentication.dto.LoginRequest;
@@ -20,24 +17,13 @@ import com.phantask.authentication.service.api.IAuthService;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Service responsible for authentication-related operations.
- *
- * <p>
- * This service centralizes logic for user authentication, registration, token
- * issuance, refresh, and invalidation. Keep security-sensitive details (keys,
- * token expirations, etc.) configurable and avoid leaking secrets in logs or
- * error messages.
- * </p>
- *
- * <p>
- * Typical responsibilities:
- * <ul>
- *   <li>Authenticate credentials and return access/refresh tokens</li>
- *   <li>Register new users and apply initial roles/policies</li>
- *   <li>Refresh access tokens using a refresh token</li>
- *   <li>Invalidate tokens / handle logout</li>
- * </ul>
- * </p>
+ * Handles all authentication-related operations for the application.
+ * 
+ * Responsibilities:
+ * - User login and password verification
+ * - Access token and refresh token generation
+ * - Refreshing access tokens
+ * - Providing basic user profile info from JWT
  */
 @Service
 @RequiredArgsConstructor
@@ -47,21 +33,11 @@ public class AuthService implements IAuthService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authManager;
 
-    /*
-     * Handles user login requests.
-     *
-     * Steps:
-     * 1. Look up the user by username using Optional.
-     * 2. If the user is not found, throw a generic BadCredentialsException.
-     * 3. Authenticate the user's password using AuthenticationManager.
-     * 4. If this is the user's first login, require a password change and return a message.
-     * 5. If login is successful, generate an access token and a refresh token.
-     * 6. Return the tokens, roles, and first-login flag in the response map.
-     *
-     * Note:
-     * - Roles are included in the access token for authorization purposes.
-     * - Refresh tokens are long-lived and do not contain roles.
-     * - The client should use the refresh token to get a new access token when it expires.
+    /**
+     * Handles user login.
+     * - Authenticates credentials
+     * - Checks if first login (require password change)
+     * - Returns access token, refresh token, and roles
      */
     @Override
     public Map<String, Object> login(LoginRequest req) {
@@ -81,74 +57,38 @@ public class AuthService implements IAuthService {
         return Map.of(
                 "token", token,
                 "refreshToken", refreshToken,
-                "role", user.getRoles().stream().map(Role::getRoleName).toList(),
+                "role", extractRoleNames(user),
                 "requirePasswordChange", false
         );
     }
 
     /**
-     * Refresh an access token using a valid refresh token.
-     *
-     * <p>
-     * Expected behaviour:
-     * <ol>
-     *   <li>Validate the refresh token (signature, expiration, revocation)</li>
-     *   <li>Issue a new access token (and possibly a new refresh token)</li>
-     * </ol>
-     * </p>
-     *
-     * @param refreshToken the refresh token presented by the client
-     * @return a new access token (or an object containing access and refresh tokens)
-     * @throws RuntimeException if the refresh token is invalid or expired
+     * Generates a new access token using a valid refresh token.
+     * - Validates refresh token
+     * - Returns new access token
      */
     @Override
     public String refreshToken(String refreshToken) {
 
         String username = jwtUtil.extractUsername(refreshToken);
         
-        // Ensure this is a refresh token and not access-token
         if (!jwtUtil.isRefreshToken(refreshToken)) {
             throw new RuntimeException("Invalid token type. Only refresh tokens are allowed.");
         }
         
         User user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
 
-        UserDetails userDetails = new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                user.getRoles().stream()
-                        .map(r -> new SimpleGrantedAuthority("ROLE_" + r.getRoleName()))
-                        .collect(Collectors.toList())
-        );
-
-        if (!jwtUtil.isTokenValid(refreshToken, userDetails)) {
+        if (!jwtUtil.isTokenValid(refreshToken, user)) {
             throw new RuntimeException("Refresh token expired. Please login again.");
         }
-
         return jwtUtil.generateAccessToken(user);
     }
     
     /**
-     * Resolve basic profile information for the user associated with the
-     * provided JWT.
-     *
-     * <p>
-     * This method is typically invoked by a {@code /api/auth/me} endpoint
-     * to let a client verify that its stored access token is still valid
-     * and belongs to an active user. The method will:
-     * </p>
-     * <ol>
-     *   <li>Extract the username from the supplied JWT</li>
-     *   <li>Load the corresponding {@link User} entity</li>
-     *   <li>Return a minimal map of profile attributes that the SPA can
-     *       cache in memory (for example: username and roles)</li>
-     * </ol>
-     *
-     * @param token the raw JWT string (without the {@code Bearer } prefix)
-     * @return a map containing lightweight user profile data such as
-     *         {@code username} and {@code roles}
-     * @throws RuntimeException if the token is invalid, expired or the user
-     *                          cannot be found
+     * Returns basic user info for the given JWT token.
+     * - Extracts username from token
+     * - Loads user entity
+     * - Returns username, roles, enabled status, and firstLogin flag
      */
     public Map<String, Object> getCurrentUserProfile(String token) {
         // extract username from token
@@ -159,11 +99,18 @@ public class AuthService implements IAuthService {
 
         return Map.of(
                 "username", user.getUsername(),
-                "roles", user.getRoles().stream()
-                        .map(Role::getRoleName)
-                        .collect(Collectors.toSet()),
+                "roles", extractRoleNames(user),
                 "enabled", user.isEnabled(),
                 "firstLogin", user.isFirstLogin()
         );
+    }
+    
+    /**
+     * Returns a list of role names assigned to a user.
+     */
+    private List<String> extractRoleNames(User user) {
+        return user.getRoles().stream()
+                .map(Role::getRoleName)
+                .toList();
     }
 }
