@@ -18,5 +18,7 @@ public interface IUserService extends UserDetailsService {
 	String changePassword(String username, PasswordChangeRequest req);
 	String changePasswordFirstLogin(PasswordChangeRequest req);
 	void deactivateUser(Long userId);
+	void reactivateUser(Long userId);
     List<UserResponse> getAllActiveUsers();
+    List<UserResponse> getAllInactiveUsers();
 }

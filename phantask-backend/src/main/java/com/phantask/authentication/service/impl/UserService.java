@@ -1,7 +1,7 @@
 package com.phantask.authentication.service.impl;
 
-import java.time.LocalDate;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -220,7 +220,7 @@ public class UserService implements IUserService {
 
   
     /* 
-    This method changes the password for a logged-in user via Forget Password.
+    Change password for an authenticated user.
 
     Steps performed:
     1. Look up the user in the database using the username.
@@ -319,6 +319,18 @@ public class UserService implements IUserService {
 	}
 
 	@Override
+	@PreAuthorize("hasRole('ADMIN')")
+	public void reactivateUser(Long userId) {
+		User user = userRepo.findByUidAndEnabledFalse(userId)
+				.orElseThrow(() -> new RuntimeException("Inactive user not found: " + userId));
+		
+		user.setEnabled(true);
+		user.setDeactivatedAt(null);
+		
+		userRepo.save(user);		
+	}
+
+	@Override
 	@Transactional(readOnly = true)
     @PreAuthorize("hasRole('ADMIN')")
 	public List<UserResponse> getAllActiveUsers() {
@@ -326,6 +338,16 @@ public class UserService implements IUserService {
 		return userRepo.findAllByEnabledTrue().stream()
                 .map(this::mapToResponse)
                 .toList();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ADMIN')")
+	public List<UserResponse> getAllInactiveUsers() {
+		
+		return userRepo.findAllByEnabledFalse().stream()
+				.map(this::mapToResponse)
+				.toList();
 	}
 	
 	private UserResponse mapToResponse(User user) {

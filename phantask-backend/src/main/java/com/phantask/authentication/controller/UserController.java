@@ -33,11 +33,18 @@ import lombok.extern.slf4j.Slf4j;
  * <p>
  * Provides end-points to:
  * <ul>
- *   <li>Create a student account with a temporary password</li>
+ *   <li>Create a user account with a temporary password</li>
  *   <li>Retrieve the authenticated user's profile</li>
  *   <li>Update the authenticated user's profile</li>
  *   <li>Change the authenticated user's password</li>
  * </ul>
+ * </p>
+ * 
+ * <p>
+ * NOTE:
+ * Authorization rules are primarily enforced at the service layer
+ * using {@code @PreAuthorize} to guarantee security even if controller
+ * methods are reused or called indirectly.
  * </p>
  *
  * <p>
@@ -52,13 +59,13 @@ public class UserController {
 	private final IUserService userService;
 	
 	/**
-	 * Create a new student user.
+	 * Create a new user account with a temporary password.
 	 *
 	 * @param req a {@link RegisterRequest} containing user-name and email for the
-	 *            new student
+	 *            new user
 	 * @return 200 OK with a success message and the temporary password when
 	 *         creation succeeds; 400 Bad Request when the user-name already exists
-	 * @throws RuntimeException if the "STUDENT" role cannot be found in the
+	 * @throws RuntimeException if the "USER" role cannot be found in the
 	 *                          database
 	 */
 	@PreAuthorize("isAuthenticated()")
@@ -83,6 +90,14 @@ public class UserController {
 	    }
 	}
 
+	/**
+	 * Deactivate an active user account.
+	 *
+	 * <p>
+	 * This operation is restricted to ADMIN users.
+	 * Authorization is enforced at the service layer.
+	 * </p>
+	 */
     @PutMapping("/{userId}/deactivate")
     public ResponseEntity<?> deactivateUser(@PathVariable Long userId) {
         userService.deactivateUser(userId);
@@ -91,11 +106,57 @@ public class UserController {
         );
     }
 
+    /**
+     * Reactivate a previously deactivated user account.
+     *
+     * <p>
+     * Only users that are currently inactive can be reactivated.
+     * Authorization is enforced at the service layer.
+     * </p>
+     */
+    @PutMapping("/{userId}/reactivate")
+    public ResponseEntity<?> reactivateUser(@PathVariable Long userId) {
+    	userService.reactivateUser(userId);
+    	return ResponseEntity.ok(
+    			Map.of("message", "User account reactivated successfully")
+    			);
+    }
+
+    /**
+     * Retrieve all active (enabled) users.
+     *
+     * <p>
+     * Typically used for administrative user management screens.
+     * Access is restricted to ADMIN users at the service layer.
+     * </p>
+     */
     @GetMapping("/active")
     public ResponseEntity<List<UserResponse>> getAllActiveUsers() {
         return ResponseEntity.ok(userService.getAllActiveUsers());
     }
+
+    /**
+     * Retrieve all inactive (disabled) users.
+     *
+     * <p>
+     * Useful for administrative actions such as reactivation.
+     * Access is restricted to ADMIN users at the service layer.
+     * </p>
+     */
+    @GetMapping("/inactive")
+    public ResponseEntity<List<UserResponse>> getAllInactiveUsers() {
+    	return ResponseEntity.ok(userService.getAllInactiveUsers());
+    }
     
+    /**
+     * Change password during first login.
+     *
+     * <p>
+     * This endpoint is intentionally accessible without authentication
+     * because the user is required to change a temporary password
+     * before completing login.
+     * </p>
+     */
 	@PostMapping("/change-password-first-login")
 	public ResponseEntity<String> changePasswordFirstLogin(@RequestBody PasswordChangeRequest req) {
 		return ResponseEntity.ok(userService.changePasswordFirstLogin(req));

@@ -44,7 +44,54 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     boolean existsByUsername(String username);
     
+    /**
+     * Retrieve all active users.
+     *
+     * <p>
+     * An active user is defined as a user with {@code enabled = true}.
+     * </p>
+     *
+     * @return a list of all enabled users
+     */
     List<User> findAllByEnabledTrue();
 
+    /**
+     * Retrieve all inactive users.
+     *
+     * <p>
+     * An inactive user is defined as a user with {@code enabled = false}.
+     * Typically used for administrative user management screens.
+     * </p>
+     *
+     * @return a list of all disabled users
+     */
+    List<User> findAllByEnabledFalse();
+
+    /**
+     * Find an active user by their unique identifier.
+     *
+     * <p>
+     * This method ensures that only users with {@code enabled = true}
+     * are returned.
+     * </p>
+     *
+     * @param uid the unique user ID
+     * @return an {@link Optional} containing the active {@link User},
+     *         or empty if not found or inactive
+     */
     Optional<User> findByUidAndEnabledTrue(Long uid);
+
+    /**
+     * Find an inactive user by their unique identifier.
+     *
+     * <p>
+     * Commonly used during user reactivation workflows to ensure
+     * the user is currently disabled.
+     * </p>
+     *
+     * @param uid the unique user ID
+     * @return an {@link Optional} containing the inactive {@link User},
+     *         or empty if not found or already active
+     */
+    Optional<User> findByUidAndEnabledFalse(Long uid);
 }
