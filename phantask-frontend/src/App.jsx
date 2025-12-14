@@ -18,6 +18,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import UserProfile from "./pages/UserProfile";
 import UpdateProfile from "./pages/UpdateProfile";
 import ManageTasks from "./pages/ManageTasks";
+import ManageUsers from "./pages/ManageUsers";
 
 const AppContent = () => {
   const location = useLocation();
@@ -63,6 +64,16 @@ const AppContent = () => {
             <PrivateRoute>
               <SideBar>
                 <ManageTasks />
+              </SideBar>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/manage-users"
+          element={
+            <PrivateRoute>
+              <SideBar>
+                <ManageUsers/>
               </SideBar>
             </PrivateRoute>
           }

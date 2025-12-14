@@ -21,16 +21,25 @@ const SideBar = ({ children }) => {
 
   const menuItems = [
     { name: "Dashboard", icon: "fa-house", path: "/" },
+
+    // ! Tasks
     isAdmin
       ? { name: "Manage Tasks", icon: "fa-plus", path: "/admin/manage-tasks" }
       : { name: "Assigned Tasks", icon: "fa-clipboard", path: "/tasks" },
+
+    // ! Users (admin only)
+    isAdmin ?
+      { name: "Manage Users", icon: "fa-users", path: "/admin/manage-users" } :
+      null,
+
+    // ! Attendance
     { name: "Attendance", icon: "fa-circle-check", path: "/attendance" },
-    // { name: "Schedule", icon: "fa-clock", path: "/schedule" },
+
     { name: "SocialHub", icon: "fa-comments", path: "/socialhub" },
     { name: "Helpline", icon: "fa-phone", path: "/helpline" },
     { name: "Feedback", icon: "fa-message", path: "/feedback" },
     { name: "Settings", icon: "fa-gear", path: "/settings" },
-  ];
+  ].filter(Boolean); // remove nulls
 
   // Called when logo <img> is clicked (desktop or mobile)
   const handleLogoClick = () => {
