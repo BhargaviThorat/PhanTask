@@ -333,7 +333,7 @@ const ManageUsers = () => {
             {/* ============================================================================ */}
             {/* ? Shows active users with search and action buttons */}
 
-            {showActiveSection && filteredActiveUsers.length > 0 && (
+            {showActiveSection && (activeUsers.length > 0 || searchTermActive) && (
                 <div className="border rounded-xl p-4 bg-white/80 shadow-sm border-green-500">
                     <div className="mb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                         <h2 className="text-xl font-bold text-green-700">Active Users</h2>

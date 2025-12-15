@@ -232,8 +232,8 @@ const ManageTasks = () => {
             <button
                 onClick={() => setFilter("ALL")}
                 className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300 ${filter === "ALL"
-                        ? "bg-orange-500 text-white"
-                        : "bg-white border border-gray-300 text-gray-700 hover:bg-orange-100"
+                    ? "bg-orange-500 text-white"
+                    : "bg-white border border-gray-300 text-gray-700 hover:bg-orange-100"
                     }`}
             >
                 <FaFilter /> All
@@ -241,8 +241,8 @@ const ManageTasks = () => {
             <button
                 onClick={() => setFilter("PENDING")}
                 className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300 ${filter === "PENDING"
-                        ? "bg-yellow-600 text-white"
-                        : "bg-white border border-gray-300 text-gray-700 hover:bg-yellow-100"
+                    ? "bg-yellow-600 text-white"
+                    : "bg-white border border-gray-300 text-gray-700 hover:bg-yellow-100"
                     }`}
             >
                 <FaFilter /> Pending
@@ -250,8 +250,8 @@ const ManageTasks = () => {
             <button
                 onClick={() => setFilter("SUBMITTED")}
                 className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300 ${filter === "SUBMITTED"
-                        ? "bg-green-600 text-white"
-                        : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
+                    ? "bg-green-600 text-white"
+                    : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
                     }`}
             >
                 <FaFilter /> Submitted
@@ -259,8 +259,8 @@ const ManageTasks = () => {
             <button
                 onClick={() => setFilter("OVERDUE")}
                 className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300 ${filter === "OVERDUE"
-                        ? "bg-red-600 text-white"
-                        : "bg-white border border-gray-300 text-gray-700 hover:bg-red-100"
+                    ? "bg-red-600 text-white"
+                    : "bg-white border border-gray-300 text-gray-700 hover:bg-red-100"
                     }`}
             >
                 <FaFilter /> Overdue
@@ -451,7 +451,7 @@ const ManageTasks = () => {
             {/* ============================================================================ */}
             {/* ? Shows pending tasks with search and action buttons */}
 
-            {showPendingSection && filteredPendingTasks.length > 0 && (
+            {showPendingSection && pendingTasks.length > 0 && (
                 <div className="border rounded-xl p-4 bg-white/80 shadow-sm border-yellow-500">
                     <div className="mb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                         <h2 className="text-xl font-bold text-yellow-700">Pending Tasks</h2>
@@ -1284,8 +1284,8 @@ const TaskDetailsModal = ({ task, onClose }) => {
                             <p className="text-sm text-gray-700 mt-1">
                                 <span
                                     className={`px-2 py-1 rounded-full text-xs font-semibold ${task.status === "PENDING"
-                                            ? "bg-yellow-100 text-yellow-700"
-                                            : "bg-green-100 text-green-700"
+                                        ? "bg-yellow-100 text-yellow-700"
+                                        : "bg-green-100 text-green-700"
                                         }`}
                                 >
                                     {task.status}
