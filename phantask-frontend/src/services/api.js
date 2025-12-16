@@ -211,6 +211,12 @@ export const apiService = {
   getAllInactiveUsers: () => api.get("/users/inactive"),
 
   /* ---------------------------------
+   *     ROLE MANAGEMENT (ADMIN)
+   * --------------------------------- */
+  getAllRoles: () => api.get("/roles/all"),
+  addRole: (roleName) => api.post("/roles/add", { roleName }),
+
+  /* ---------------------------------
    *      TOKEN REFRESH
    * --------------------------------- */
   refreshAccessToken,

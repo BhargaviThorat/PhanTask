@@ -334,7 +334,7 @@ const ManageUsers = () => {
             {/* ? Shows active users with search and action buttons */}
 
             {showActiveSection && (activeUsers.length > 0 || searchTermActive) && (
-                <div className="border rounded-xl p-4 bg-white/80 shadow-sm border-green-500">
+                <div className="border rounded-xl p-4 bg-white/80 shadow-sm border-green-500 max-w-full">
                     <div className="mb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                         <h2 className="text-xl font-bold text-green-700">Active Users</h2>
                         <input
@@ -352,7 +352,7 @@ const ManageUsers = () => {
                             {searchTermActive ? "No users match your search." : "No active users found."}
                         </p>
                     ) : (
-                        <div className="overflow-x-auto">
+                        <div className="overflow-x-auto w-full">
                             <table className="w-full text-sm border-collapse">
                                 <thead>
                                     <tr className="bg-green-100 text-green-900">
@@ -371,7 +371,7 @@ const ManageUsers = () => {
                                             className="border-t hover:bg-green-50 transition-colors"
                                         >
                                             <td className="p-3 font-medium text-center">{user.username}</td>
-                                            <td className="p-3 text-center">{user.email}</td>
+                                            <td className="p-3 text-center break-all max-w-xs">{user.email}</td>
                                             <td className="p-3">
                                                 <div className="flex flex-wrap justify-center gap-1">
                                                     {(user.roles.length ? user.roles : ["N/A"]).map((role) => (
@@ -443,7 +443,7 @@ const ManageUsers = () => {
             {/* ? Shows inactive users with search and reactivate button */}
 
             {showInactiveSection && inactiveUsers.length > 0 && (
-                <div className="border rounded-xl p-4 bg-white/80 shadow-sm border-red-300">
+                <div className="border rounded-xl p-4 bg-white/80 shadow-sm border-red-300  max-w-full">
                     <div className="mb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                         <h2 className="text-xl font-bold text-red-700">Inactive Users</h2>
                         <input
@@ -461,7 +461,7 @@ const ManageUsers = () => {
                             {searchTermInactive ? "No users match your search." : "Inactive users will appear here."}
                         </p>
                     ) : (
-                        <div className="overflow-x-auto">
+                        <div className="overflow-x-auto w-full">
                             <table className="w-full text-sm border-collapse">
                                 <thead>
                                     <tr className="bg-red-100 text-red-900">
@@ -480,7 +480,7 @@ const ManageUsers = () => {
                                             className="border-t hover:bg-red-50 transition-colors"
                                         >
                                             <td className="p-3 font-medium text-center">{user.username}</td>
-                                            <td className="p-3 text-center">{user.email}</td>
+                                            <td className="p-3 text-center break-all max-w-xs">{user.email}</td>
                                             <td className="p-3">
                                                 <div className="flex flex-wrap justify-center gap-1">
                                                     {(user.roles.length ? user.roles : ["N/A"]).map((role) => (

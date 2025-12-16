@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useApi } from '../../context/ApiContext';
 import { useNavigate } from 'react-router-dom';
+import { refreshRolesFromBackend } from "../../constants/roles"
 
 const LoginForm = ({ onLoginSuccess }) => {
   const [formData, setFormData] = useState({ username: '', password: '' });
@@ -37,6 +38,10 @@ const LoginForm = ({ onLoginSuccess }) => {
       if (refreshToken) sessionStorage.setItem("refreshToken", refreshToken);
       if (role) sessionStorage.setItem("userRole", JSON.stringify(role));
 
+      // Fetch roles from backend if user is ADMIN
+      if (Array.isArray(role) && role.includes("ADMIN")) {
+        await refreshRolesFromBackend();
+      }
 
       toast.success('Login successful!');
 

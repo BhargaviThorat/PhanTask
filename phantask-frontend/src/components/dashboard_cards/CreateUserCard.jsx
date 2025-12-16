@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { apiService } from "../../services/api";
 import { toast } from "react-hot-toast";
 import Select from "react-select";
+import { DEFAULT_ROLE_OPTIONS } from "../../constants/roles";
 
 // ! Main Component - Create User Card
 const CreateUserCard = () => {
@@ -59,13 +60,9 @@ const CreateUserModal = ({ onClose }) => {
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
 
-  // * Role Options for Dropdown
-  const roleOptions = [
-    { value: "USER", label: "User" },
-    { value: "HR", label: "HR" },
-    { value: "STUDENT", label: "Student" },
-    { value: "ADMIN", label: "Admin" },
-  ];
+  // * Role Options for Dropdown (from constants)
+  const roleOptions = DEFAULT_ROLE_OPTIONS;
+
 
   // * Custom Styles for React-Select (matching email input styling)
   const selectStyles = {
@@ -197,9 +194,11 @@ const CreateUserModal = ({ onClose }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="user@example.com"
+              maxLength={254}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
-        focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600"
+    focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600"
             />
+
 
             {/* Role Select */}
             <label className="text-sm font-semibold text-gray-800 mt-1">Role</label>

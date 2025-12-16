@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import LoadingSkeleton from "../components/LoadingSkeleton";
 import { FaFilter } from "react-icons/fa";
 import Select from "react-select";
+import { getRoleOptionsWithoutAdmin, DEFAULT_ROLE_OPTIONS } from "../constants/roles";
 
 // * ============================================================================
 // * MANAGE TASKS COMPONENT
@@ -349,12 +350,12 @@ const ManageTasks = () => {
             {/* ? Shows overdue pending tasks with red highlighting */}
 
             {showOverdueSection && overdueTasks.length > 0 && (
-                <div className="border rounded-xl p-4 bg-white/80 shadow-sm border-red-500">
+                <div className="border rounded-xl p-4 bg-white/80 shadow-sm border-red-500 max-w-full">
                     <div className="mb-3">
                         <h2 className="text-xl font-bold text-red-700">Overdue Tasks</h2>
                     </div>
 
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto w-full">
                         <table className="w-full text-sm border-collapse">
                             <thead>
                                 <tr className="bg-red-100 text-red-900">
@@ -372,19 +373,15 @@ const ManageTasks = () => {
                                         key={task.id}
                                         className="border-t hover:bg-red-50 transition-colors"
                                     >
-                                        <td className="p-3 font-medium text-center">
-                                            {task.taskName || "(Untitled)"}
-                                        </td>
-                                        <td className="p-3 text-center">
+                                        <td className="p-3 font-medium text-center break-words max-w-xs">{task.taskName || "Untitled"}</td>
+                                        <td className="p-3 text-center break-words max-w-xs">
                                             {task.assignedToUser ? (
                                                 <span className="text-gray-800">{task.assignedToUser}</span>
                                             ) : task.assignedToRole ? (
                                                 <span className="inline-flex items-center rounded-full bg-[#FCE0D6] px-2.5 py-1 text-xs font-medium text-[#8c432b]">
                                                     {task.assignedToRole}
                                                 </span>
-                                            ) : (
-                                                "—"
-                                            )}
+                                            ) : "—"}
                                         </td>
                                         <td className="p-3 text-center">
                                             <span className="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">
@@ -452,7 +449,7 @@ const ManageTasks = () => {
             {/* ? Shows pending tasks with search and action buttons */}
 
             {showPendingSection && pendingTasks.length > 0 && (
-                <div className="border rounded-xl p-4 bg-white/80 shadow-sm border-yellow-500">
+                <div className="border rounded-xl p-4 bg-white/80 shadow-sm border-yellow-500 max-w-full">
                     <div className="mb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                         <h2 className="text-xl font-bold text-yellow-700">Pending Tasks</h2>
                         <input
@@ -470,7 +467,7 @@ const ManageTasks = () => {
                             {searchTermPending ? "No tasks match your search." : "No pending tasks found."}
                         </p>
                     ) : (
-                        <div className="overflow-x-auto">
+                        <div className="overflow-x-auto w-full">
                             <table className="w-full text-sm border-collapse">
                                 <thead>
                                     <tr className="bg-yellow-100 text-yellow-900">
@@ -490,19 +487,15 @@ const ManageTasks = () => {
                                             className={`border-t hover:bg-yellow-50 transition-colors ${isOverdue(task) ? "bg-red-50" : ""
                                                 }`}
                                         >
-                                            <td className="p-3 font-medium text-center">
-                                                {task.taskName || "(Untitled)"}
-                                            </td>
-                                            <td className="p-3 text-center">
+                                            <td className="p-3 font-medium text-center break-words max-w-xs">{task.taskName || "Untitled"}</td>
+                                            <td className="p-3 text-center break-words max-w-xs">
                                                 {task.assignedToUser ? (
                                                     <span className="text-gray-800">{task.assignedToUser}</span>
                                                 ) : task.assignedToRole ? (
                                                     <span className="inline-flex items-center rounded-full bg-[#FCE0D6] px-2.5 py-1 text-xs font-medium text-[#8c432b]">
                                                         {task.assignedToRole}
                                                     </span>
-                                                ) : (
-                                                    "—"
-                                                )}
+                                                ) : "—"}
                                             </td>
                                             <td className="p-3 text-center">
                                                 <span className="px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">
@@ -581,7 +574,7 @@ const ManageTasks = () => {
             {/* ? Shows submitted tasks with search - NO EDIT BUTTON */}
 
             {showSubmittedSection && submittedTasks.length > 0 && (
-                <div className="border rounded-xl p-4 bg-white/80 shadow-sm border-green-300">
+                <div className="border rounded-xl p-4 bg-white/80 shadow-sm border-green-300 max-w-full">
                     <div className="mb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                         <h2 className="text-xl font-bold text-green-700">Submitted Tasks</h2>
                         <input
@@ -599,7 +592,7 @@ const ManageTasks = () => {
                             {searchTermSubmitted ? "No tasks match your search." : "Submitted tasks will appear here."}
                         </p>
                     ) : (
-                        <div className="overflow-x-auto">
+                        <div className="overflow-x-auto w-full">
                             <table className="w-full text-sm border-collapse">
                                 <thead>
                                     <tr className="bg-green-100 text-green-900">
@@ -618,19 +611,15 @@ const ManageTasks = () => {
                                             key={task.id}
                                             className="border-t hover:bg-green-50 transition-colors"
                                         >
-                                            <td className="p-3 font-medium text-center">
-                                                {task.taskName || "(Untitled)"}
-                                            </td>
-                                            <td className="p-3 text-center">
+                                            <td className="p-3 font-medium text-center break-words max-w-xs">{task.taskName || "Untitled"}</td>
+                                            <td className="p-3 text-center break-words max-w-xs">
                                                 {task.assignedToUser ? (
                                                     <span className="text-gray-800">{task.assignedToUser}</span>
                                                 ) : task.assignedToRole ? (
                                                     <span className="inline-flex items-center rounded-full bg-[#FCE0D6] px-2.5 py-1 text-xs font-medium text-[#8c432b]">
                                                         {task.assignedToRole}
                                                     </span>
-                                                ) : (
-                                                    "—"
-                                                )}
+                                                ) : "—"}
                                             </td>
                                             <td className="p-3 text-center">
                                                 <span className="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
@@ -812,13 +801,9 @@ const EditTaskModal = ({ task, onClose, onSuccess }) => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    // * Role Options for Dropdown
-    const roleOptions = [
-        { value: "", label: "Select Role..." },
-        { value: "USER", label: "User" },
-        { value: "HR", label: "HR" },
-        { value: "STUDENT", label: "Student" },
-    ];
+    // * Role Options for Dropdown (from constants, without ADMIN)
+    const roleOptions = getRoleOptionsWithoutAdmin(DEFAULT_ROLE_OPTIONS);
+
 
     // * User Options for Dropdown (dynamically populated)
     const userOptions = [

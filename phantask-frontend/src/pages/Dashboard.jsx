@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import PhanAI from "../components/PhanAI.jsx";
 import AdminCreateUser from "../components/dashboard_cards/CreateUserCard.jsx";
 import AdminTasksCard from "../components/dashboard_cards/CreateTasksCard.jsx";
+import AddRoleCard from "../components/dashboard_cards/AddRoleCard.jsx";
 
 const Dashboard = () => {
   const { user, isAdmin } = useAuth();
@@ -83,10 +84,13 @@ const Dashboard = () => {
 
         {/* Bottom Section - 2 Columns */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-          <div className="h-48">
-            <SocialHighlightsCard />
-          </div>
-          <div className="h-48">
+
+          {isAdmin ?
+            <div className="h-72"><AddRoleCard /></div> :
+            <div className="h-72"><SocialHighlightsCard /></div>
+          }
+
+          <div className="h-72">
             <FocusReminderCard />
           </div>
         </div>

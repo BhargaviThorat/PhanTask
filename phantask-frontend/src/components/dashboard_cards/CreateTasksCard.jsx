@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { apiService } from "../../services/api";
 import { toast } from "react-hot-toast";
 import Select from "react-select";
+import { getRoleOptionsWithoutAdmin, DEFAULT_ROLE_OPTIONS } from "../../constants/roles";
 
 // ! Main Component - Create Task Card
 const CreateTaskCard = () => {
@@ -62,13 +63,9 @@ const CreateTaskModal = ({ onClose }) => {
   const [assignedRoleByUsers, setAssignedRoleByUsers] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // * Role Options for Dropdown
-  const roleOptions = [
-    { value: "", label: "Select Role..." },
-    { value: "USER", label: "User" },
-    { value: "HR", label: "HR" },
-    { value: "STUDENT", label: "Student" },
-  ];
+  // * Role Options for Dropdown (from constants, without ADMIN)
+  const roleOptions = getRoleOptionsWithoutAdmin(DEFAULT_ROLE_OPTIONS);
+
 
   // * User Options for Dropdown (dynamically populated)
   const userOptions = [
