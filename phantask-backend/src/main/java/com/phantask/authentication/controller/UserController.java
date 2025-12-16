@@ -182,27 +182,27 @@ public class UserController {
 	 * </p>
 	 */
 	@PostMapping(value = "/update-profile-first-login", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<String> updateProfileFirstLogin(
-	        @ModelAttribute UpdateProfileRequest req) {
-	    
-	    log.info("=== UPDATE PROFILE FIRST LOGIN CALLED ===");  // ✅ ADD THIS
-	    log.info("Username from request: {}", req.getUsername());  // ✅ ADD THIS
-	    
-	    String username = req.getUsername();
-	    
-	    if (username == null || username.isEmpty()) {
-	        return ResponseEntity.badRequest()
-	            .body("Username is required for first login profile update");
-	    }
-	    
-	    try {
-	        return ResponseEntity.ok(userService.updateProfileFirstLogin(username, req));
-	    } catch (RuntimeException ex) {
-	        log.error("Error in updateProfileFirstLogin: {}", ex.getMessage());  // ✅ ADD THIS
-	        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	            .body(ex.getMessage());
-	    }
-	}
+public ResponseEntity<String> updateProfileFirstLogin(
+        @ModelAttribute UpdateProfileRequest req) {
+    
+    log.info("=== UPDATE PROFILE FIRST LOGIN CALLED ==="); 
+    log.info("Username from request: {}", req.getUsername());
+    
+    String username = req.getUsername();
+    
+    if (username == null || username.isEmpty()) {
+        return ResponseEntity.badRequest()
+            .body("Username is required for first login profile update");
+    }
+    
+    try {
+        return ResponseEntity.ok(userService.updateProfileFirstLogin(username, req));
+    } catch (RuntimeException ex) {
+        log.error("Error in updateProfileFirstLogin: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+            .body(ex.getMessage());
+    }
+}
 
 
 	

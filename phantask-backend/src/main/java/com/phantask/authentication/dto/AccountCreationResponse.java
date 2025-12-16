@@ -1,18 +1,13 @@
 package com.phantask.authentication.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class AccountCreationResponse {
-	private String username;
-	private String tempPasswordMessage;
 
-	public AccountCreationResponse(String username, String tempPasswordMessage) {
-		this.username = username;
-		this.tempPasswordMessage = tempPasswordMessage;
-	}
-	
-	public String getUsername() { return username; }
-    public String getMessage() { return tempPasswordMessage; }
+    private String username;
+    private String message;
 
 }

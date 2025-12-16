@@ -29,6 +29,7 @@ import com.phantask.authentication.repository.RoleRepository;
 import com.phantask.authentication.repository.UserProfileRepository;
 import com.phantask.authentication.repository.UserRepository;
 import com.phantask.authentication.service.api.IUserService;
+import com.phantask.notification.email.EmailService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,6 +61,7 @@ public class UserService implements IUserService {
     private final RoleRepository roleRepo;
     private final UserProfileRepository profileRepo;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Override
     public UserDetails loadUserByUsername(String username) {
@@ -113,9 +115,13 @@ public class UserService implements IUserService {
 
         userRepo.save(user);
 
-        log.info("Account created: username={}", username);
+        log.info("Account created: username={}, role={}", username, normalizedRole);
 
-        // TODO: do not send the password in response instead mail the student
+        try {
+            emailService.sendAccountCreationEmail("bkpati2024@gmail.com", username, tempPassword);
+        } catch (Exception e) {
+            log.error("Email sending failed", e);
+        }
         return new AccountCreationResponse(username,
                 "User account created successfully. Temporary password is " + tempPassword);
     }
