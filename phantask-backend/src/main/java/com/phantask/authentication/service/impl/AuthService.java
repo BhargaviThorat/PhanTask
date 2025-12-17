@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 import com.phantask.authentication.dto.LoginRequest;
 import com.phantask.authentication.entity.Role;
 import com.phantask.authentication.entity.User;
-import com.phantask.authentication.exception.AccountDeactivatedException;
 import com.phantask.authentication.repository.UserRepository;
 import com.phantask.authentication.security.JwtUtil;
 import com.phantask.authentication.service.api.IAuthService;
+import com.phantask.exception.AccountDeactivatedException;
 
 import lombok.RequiredArgsConstructor;
 

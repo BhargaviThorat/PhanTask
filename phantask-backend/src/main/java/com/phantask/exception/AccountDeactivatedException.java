@@ -1,4 +1,4 @@
-package com.phantask.authentication.exception;
+package com.phantask.exception;
 
 public class AccountDeactivatedException extends RuntimeException {
 

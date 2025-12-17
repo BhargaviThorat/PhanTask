@@ -261,14 +261,14 @@ public class UserService implements IUserService {
                 && password.matches(".*\\d.*");
     }
     
-    //To match old password
+    //To validate old password
     private void validateOldPassword(String oldPassword, String encodedPassword) {
         if (!passwordEncoder.matches(oldPassword, encodedPassword)) {
             throw new RuntimeException("Old password is incorrect");
         }
     }
 
-    //To check new password strength and match it with old password
+    //To validate new password and check whether it is same as old password
     private void validateNewPassword(String newPassword, String encodedPassword) {
         if (!isValidPassword(newPassword)) {
             throw new RuntimeException("Password must be 8+ chars, contain upper, lower, digit");
@@ -289,7 +289,7 @@ public class UserService implements IUserService {
     /* 
     This method is used to change the password during a user's first login(unauthenticated).
 
-    What it does:
+    Steps performed:
     1. Fetch the user from the database using the username provided
        inside the request object. If the user does not exist, an error is thrown.
     2. Verify that the old password provided matches the user's current 
@@ -429,7 +429,7 @@ public class UserService implements IUserService {
 	/*
 	 * This method allows an admin to edit a user's profile and optionally reset their password.
 	 * 
-	 * What it does:
+	 * Steps performed:
 	 * 1. Fetch the user from the database using the userId.
 	 *    If the user does not exist, an error is thrown.
 	 * 2. Retrieve the user's profile or create a new one if it doesn't exist.

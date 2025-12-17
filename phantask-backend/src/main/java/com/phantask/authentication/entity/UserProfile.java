@@ -59,31 +59,31 @@ public class UserProfile {
 	@JsonManagedReference
 	private User user;
 
-  @Size(max = 255)
+	@Size(max = 255)
 	private String fullName;
-  
-	@Column(name = "department")
-  private String department;
 
-  @Size(max = 20)
+	@Column(name = "department")
+	private String department;
+
+	@Size(max = 20)
 	private String phone;
 
 	@Lob
 	@Column(name = "profile_pic", columnDefinition = "LONGBLOB")
 	private byte[] profilePic;
 
-  // New field for Date of Birth
-  @Past(message = "DOB must be in the past")
-  private LocalDate dob;
-    
-  @Column(name = "year_of_study")
-  private String yearOfStudy;
-    
-  //helper method
-  public void setUser(User user) {
-     this.user = user;
-     if (user.getProfile() != this) {
-         user.setProfile(this);
-     }
-  }
+	// New field for Date of Birth
+	@Past(message = "DOB must be in the past")
+	private LocalDate dob;
+
+	@Column(name = "year_of_study")
+	private String yearOfStudy;
+
+	// helper method
+	public void setUser(User user) {
+		this.user = user;
+		if (user.getProfile() != this) {
+			user.setProfile(this);
+		}
+	}
 }
