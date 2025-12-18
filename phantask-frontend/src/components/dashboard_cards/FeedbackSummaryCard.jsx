@@ -30,7 +30,7 @@ const FeedbackSummaryCard = () => {
 
           <a className='w-full' target='_black' href="https://actsfeedback.cdac.in/feedbackSystem">
             <button className="w-full text-center hover:rounded-xl text-[#42260b] text-sm font-medium mt-1 py-2 hover:bg-red-100">
-              View all
+              Create Feedback
             </button>
           </a>
         </main>

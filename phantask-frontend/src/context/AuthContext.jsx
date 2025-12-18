@@ -6,6 +6,7 @@ import React, {
   useCallback,
 } from "react";
 import { apiService } from "../services/api";
+import { refreshRolesFromBackend } from "../constants/roles";
 
 const AuthContext = createContext(null);
 
@@ -26,6 +27,11 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await apiService.getUserProfile();
       setUser(res.data);
+
+      // Fetch roles from backend if user is ADMIN
+      if (Array.isArray(res.data?.roles) && res.data.roles.includes("ADMIN")) {
+        await refreshRolesFromBackend();
+      }
     } catch (err) {
       console.error("Failed to fetch profile:", err);
       setUser(null);

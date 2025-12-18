@@ -95,7 +95,7 @@ let isRolesFetched = false; // Track if roles have been fetched
 export const refreshRolesFromBackend = async () => {
   // Prevent multiple fetches
   if (isRolesFetched) {
-    console.log("ℹ️ Roles already fetched, skipping...");
+    console.log("Roles already fetched, skipping...");
     return DEFAULT_ROLE_OPTIONS;
   }
 
@@ -103,7 +103,7 @@ export const refreshRolesFromBackend = async () => {
     const response = await apiService.getAllRoles();
     const rolesArray = response.data || [];
 
-    console.log("✅ Fetched roles from backend:", rolesArray);
+    console.log("Fetched roles from backend:", rolesArray);
 
     // Update the exported constant (with ADMIN always last)
     DEFAULT_ROLE_OPTIONS = transformRolesToOptions(rolesArray);

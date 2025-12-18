@@ -11,7 +11,7 @@ const notices = [
 
 const NoticeBoardCard = () => {
   return (
-    <div className="h-full w-full rounded-xl border-2 border-[#522320] bg-[#ffffff] p-4 shadow-md shadow-[#522320]/20 transition-all duration-300 hover:shadow-md hover:shadow-[#522320]/30 hover:-translate-y-0.5">
+    <div className="w-full h-full rounded-xl border-2 border-[#522320] bg-[#ffffff] p-3 shadow-md shadow-[#522320]/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#522320]/30 hover:-translate-y-0.5 flex flex-col">
       <span className='w-full h-full flex flex-col'>
 
         <h2 className="w-full text-lg font-semibold text-[#522320] mb-3 text-center">

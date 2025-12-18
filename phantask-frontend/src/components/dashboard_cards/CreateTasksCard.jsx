@@ -24,7 +24,7 @@ const CreateTaskCard = () => {
               <span className="text-2xl">📝</span>
             </div>
 
-            <h3 className="text-xl font-bold text-[#522320] mb-1.5 leading-tight">
+            <h3 className="text-xl text-center font-bold text-[#522320] mb-1.5 leading-tight">
               Assign New Task
             </h3>
 
