@@ -4,13 +4,16 @@ import { apiService } from "../services/api";
 import { toast } from "react-hot-toast";
 import { FaFilter } from "react-icons/fa";
 
+
 const AssignedTasks = () => {
   const { user, loading } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [taskLoading, setTaskLoading] = useState(false);
 
+
   // Filter state: ALL, PENDING, SUBMITTED
   const [filter, setFilter] = useState("ALL");
+
 
   // Fetch tasks
   useEffect(() => {
@@ -29,10 +32,13 @@ const AssignedTasks = () => {
     fetchTasks();
   }, [user]);
 
+
   // console.log(tasks);
 
 
+
   if (loading || taskLoading) return <div>Loading tasks...</div>;
+
 
   // Filter tasks based on selected filter
   const filteredTasks = tasks.filter((t) => {
@@ -42,13 +48,16 @@ const AssignedTasks = () => {
     return true;
   });
 
+
   const pendingTasks = filteredTasks
     .filter((t) => t.status === "PENDING")
     .sort((a, b) => new Date(b.assignDate) - new Date(a.assignDate));
 
+
   const completedTasks = filteredTasks
     .filter((t) => t.status === "SUBMITTED")
     .sort((a, b) => new Date(b.uploadDateTime) - new Date(a.uploadDateTime));
+
 
   const formatDate = (dateStr) => {
     if (!dateStr) return "-";
@@ -58,17 +67,20 @@ const AssignedTasks = () => {
       .padStart(2, "0")}-${d.getFullYear()}`;
   };
 
+
   // Modal state
   const [selectedTask, setSelectedTask] = useState(null);
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+
   const openModal = (task) => {
     setSelectedTask(task);
     setConfirmVisible(false);
     setConfirmed(false);
   };
+
 
   const closeModal = () => {
     setSelectedTask(null);
@@ -77,8 +89,10 @@ const AssignedTasks = () => {
     setSubmitting(false);
   };
 
+
   const handleSubmitClick = async () => {
     if (!confirmed || !selectedTask) return;
+
 
     setSubmitting(true);
     try {
@@ -98,6 +112,7 @@ const AssignedTasks = () => {
       setSubmitting(false);
     }
   };
+
 
   // Task Card Component
   const TaskCard = ({ task, isPending }) => (
@@ -122,10 +137,12 @@ const AssignedTasks = () => {
     </div>
   );
 
+
   // Modal Component
   const Modal = () => {
     if (!selectedTask) return null;
     const isPending = selectedTask.status === "PENDING";
+
 
     return (
       <div
@@ -134,9 +151,9 @@ const AssignedTasks = () => {
         role="dialog"
       >
         <div className="absolute inset-0 bg-black/40" onClick={closeModal} />
-        <div className="relative w-[90%] sm:w-[85%] md:w-3/5 lg:w-2/5 max-h-[95vh] overflow-auto">
+        <div className="relative w-[90%] sm:w-[85%] md:w-3/5 lg:w-2/5 max-h-[95vh] animate-slideUp">
           <div
-            className="bg-white rounded-xl p-4 md:p-6 shadow-xl h-full flex flex-col"
+            className="bg-white rounded-xl p-4 md:p-6 shadow-xl max-h-[95vh] overflow-y-auto flex flex-col"
             style={{ border: `2px solid ${isPending ? "#FACC15" : "#22C55E"}` }}
           >
             <div className="flex items-start justify-between">
@@ -147,6 +164,7 @@ const AssignedTasks = () => {
                 </p>
               </div>
             </div>
+
 
             <div className="mt-4 flex-1 overflow-auto">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -172,6 +190,7 @@ const AssignedTasks = () => {
                 <p className="text-sm whitespace-pre-wrap mt-1">{selectedTask.description}</p>
               </div>
             </div>
+
 
             <div className="mt-4">
               {isPending ? (
@@ -202,6 +221,7 @@ const AssignedTasks = () => {
                         />
                         I hereby declare the task is completed to the best of my ability.
                       </label>
+
 
                       <div className="flex gap-2">
                         <button
@@ -238,9 +258,21 @@ const AssignedTasks = () => {
             </div>
           </div>
         </div>
+
+        {/* Animation styles */}
+        <style>
+          {`
+            @keyframes slideUp {
+              0% { transform: translateY(100%); opacity: 0; }
+              100% { transform: translateY(0); opacity: 1; }
+            }
+            .animate-slideUp { animation: slideUp 0.2s ease-out forwards; }
+          `}
+        </style>
       </div>
     );
   };
+
 
   // Task Section Component
   const TaskSection = ({ tasks, isPending }) => (
@@ -254,6 +286,7 @@ const AssignedTasks = () => {
       >
         {isPending ? "Pending Tasks" : "Completed Tasks"}
       </h2>
+
 
       {tasks.length === 0 ? (
         <p className="text-center text-gray-500 py-6">
@@ -269,14 +302,15 @@ const AssignedTasks = () => {
     </div>
   );
 
+
   // Filter Bar Component
   const FilterBar = () => (
     <div className="flex flex-wrap justify-center gap-2 mb-4">
       <button
         onClick={() => setFilter("ALL")}
         className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300 ${filter === "ALL"
-            ? "bg-orange-500 text-white"
-            : "bg-white border border-gray-300 text-gray-700 hover:bg-orange-100"
+          ? "bg-orange-500 text-white"
+          : "bg-white border border-gray-300 text-gray-700 hover:bg-orange-100"
           }`}
       >
         <FaFilter /> All
@@ -284,8 +318,8 @@ const AssignedTasks = () => {
       <button
         onClick={() => setFilter("PENDING")}
         className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300 ${filter === "PENDING"
-            ? "bg-yellow-500 text-white"
-            : "bg-white border border-gray-300 text-gray-700 hover:bg-yellow-100"
+          ? "bg-yellow-500 text-white"
+          : "bg-white border border-gray-300 text-gray-700 hover:bg-yellow-100"
           }`}
       >
         <FaFilter /> Pending
@@ -293,14 +327,15 @@ const AssignedTasks = () => {
       <button
         onClick={() => setFilter("SUBMITTED")}
         className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium transition-colors duration-300 ${filter === "SUBMITTED"
-            ? "bg-green-600 text-white"
-            : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
+          ? "bg-green-600 text-white"
+          : "bg-white border border-gray-300 text-gray-700 hover:bg-green-100"
           }`}
       >
         <FaFilter /> Submitted
       </button>
     </div>
   );
+
 
   return (
     <div className="space-y-6 p-4">
@@ -310,8 +345,10 @@ const AssignedTasks = () => {
         </h1>
       </div>
 
+
       {/* Filter Bar */}
       <FilterBar />
+
 
       {filteredTasks.length === 0 && (
         <main className="w-full h-full flex flex-col items-center justify-center p-4">
@@ -322,12 +359,16 @@ const AssignedTasks = () => {
         </main>
       )}
 
+
       {pendingTasks.length > 0 && <TaskSection tasks={pendingTasks} isPending={true} />}
       {completedTasks.length > 0 && <TaskSection tasks={completedTasks} isPending={false} />}
+
 
       <Modal />
     </div>
   );
 };
 
+
 export default AssignedTasks;
+  
