@@ -19,6 +19,8 @@ import UserProfile from "./pages/UserProfile";
 import UpdateProfile from "./pages/UpdateProfile";
 import ManageTasks from "./pages/ManageTasks";
 import ManageUsers from "./pages/ManageUsers";
+import Notices from "./pages/Notices.jsx";
+import ManageNotices from "./pages/ManageNotices.jsx";
 
 const AppContent = () => {
   const location = useLocation();
@@ -73,7 +75,7 @@ const AppContent = () => {
           element={
             <PrivateRoute>
               <SideBar>
-                <ManageUsers/>
+                <ManageUsers />
               </SideBar>
             </PrivateRoute>
           }
@@ -84,6 +86,36 @@ const AppContent = () => {
             <PrivateRoute>
               <SideBar>
                 <Attendance />
+              </SideBar>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/manage-attendance"
+          element={
+            <PrivateRoute>
+              <SideBar>
+                <Attendance />
+              </SideBar>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/notices"
+          element={
+            <PrivateRoute>
+              <SideBar>
+                <Notices />
+              </SideBar>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/manage-notices"
+          element={
+            <PrivateRoute>
+              <SideBar>
+                <ManageNotices />
               </SideBar>
             </PrivateRoute>
           }

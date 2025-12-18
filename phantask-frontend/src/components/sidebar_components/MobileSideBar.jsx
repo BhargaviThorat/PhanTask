@@ -17,7 +17,7 @@ const MobileSideBar = ({ menuItems, isMobileOpen, setIsMobileOpen, onLogoClick }
 
             {/* Drawer */}
             <div
-                className={`fixed inset-0 bg-[#662222] text-[#FFEAEA] w-64 h-full transform transition-transform duration-300 z-40 overflow-y-auto ${isMobileOpen ? "translate-x-0" : "-translate-x-full"
+                className={`fixed inset-0 bg-[#662222] text-[#FFEAEA] w-64 h-full transform transition-transform duration-300 z-40 overflow-y-auto sidebar-scroll ${isMobileOpen ? "translate-x-0" : "-translate-x-full"
                     }`}
             >
                 {/* Mobile Header */}
@@ -25,7 +25,7 @@ const MobileSideBar = ({ menuItems, isMobileOpen, setIsMobileOpen, onLogoClick }
                     <img
                         src="/rectangular-logo.png"
                         alt="PhanTask Logo"
-                        className="w-3/4"
+                        className="w-3/4 cursor-pointer"
                         onClick={onLogoClick}
                     />
 

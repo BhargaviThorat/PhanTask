@@ -5,7 +5,7 @@ const Attendance = () => {
   const [authToken, setAuthToken] = useState(sessionStorage.getItem('authToken') || sessionStorage.getItem('testToken'));
 
   const refreshToken = useCallback(() => {
-    const newToken = sessionStorage.getItem('authToken') || sessionStorage.getItem('testToken') ;
+    const newToken = sessionStorage.getItem('authToken') || sessionStorage.getItem('testToken');
     setAuthToken(newToken);
   }, []);
 

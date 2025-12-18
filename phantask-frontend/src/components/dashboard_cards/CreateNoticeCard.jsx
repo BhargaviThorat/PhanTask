@@ -3,8 +3,8 @@ import { toast } from "react-hot-toast";
 import Select from "react-select";
 import { getRoleOptionsWithoutAdmin, DEFAULT_ROLE_OPTIONS } from "../../constants/roles";
 
-// ! Main Component - Create Feedback Card
-const CreateFeedbackCard = () => {
+// ! Main Component - Create Notice Card
+const CreateNoticeCard = () => {
     const [showModal, setShowModal] = useState(false);
 
     return (
@@ -14,21 +14,21 @@ const CreateFeedbackCard = () => {
                 <span className="w-full h-full flex flex-col justify-between">
                     {/* * Card Header */}
                     <h2 className="h-10 text-lg font-semibold py-1 text-[#522320] text-center">
-                        Create Feedback
+                        Create Notice
                     </h2>
 
-                    {/* * Empty-state content (same style as CreateUserCard) */}
+                    {/* * Empty-state content */}
                     <main className="w-full h-full flex flex-col items-center justify-center p-4 bg-gradient-to-b from-[#fff9f8]/30 to-[#fff1f0]/20 rounded-xl border-[#522320]/20 shadow-sm">
                         <div className="w-14 h-14 bg-[#522320]/5 rounded-2xl flex items-center justify-center mb-3 shadow-md shadow-[#522320]/10">
-                            <span className="text-2xl">📋</span>
+                            <span className="text-2xl">📢</span>
                         </div>
 
                         <h3 className="text-xl text-center font-bold text-[#522320] mb-1.5 leading-tight">
-                            Design Feedback Form
+                            Post New Notice
                         </h3>
 
                         <p className="text-[#522320]/60 text-xs font-medium text-center leading-tight max-w-[160px]">
-                            Create custom feedbacks with dynamic questions.
+                            Create announcements visible to selected roles.
                         </p>
                     </main>
 
@@ -37,31 +37,39 @@ const CreateFeedbackCard = () => {
                         onClick={() => setShowModal(true)}
                         className="w-full text-center hover:rounded-xl text-[#42260b] text-sm font-medium mt-1 py-2 hover:bg-red-100"
                     >
-                        Create Feedback
+                        Create Notice
                     </button>
                 </span>
             </div>
 
             {/* ? Conditionally render modal */}
-            {showModal && <CreateFeedbackModal onClose={() => setShowModal(false)} />}
+            {showModal && <CreateNoticeModal onClose={() => setShowModal(false)} />}
         </>
     );
 };
 
-export default CreateFeedbackCard;
+export default CreateNoticeCard;
 
-// ! Modal Component - Create Feedback Form
-const CreateFeedbackModal = ({ onClose }) => {
+// ! Modal Component - Create Notice Form
+const CreateNoticeModal = ({ onClose }) => {
     // * State Management
     const [title, setTitle] = useState("");
-    const [assignedRoles, setAssignedRoles] = useState([]);
-    const [questions, setQuestions] = useState([""]);
+    const [content, setContent] = useState("");
+    const [priority, setPriority] = useState("GENERAL");
+    const [targetRoles, setTargetRoles] = useState([]);
     const [loading, setLoading] = useState(false);
     const [confirmVisible, setConfirmVisible] = useState(false);
     const [confirmed, setConfirmed] = useState(false);
 
     // * Role Options for Multi-Select Dropdown with Checkboxes (without ADMIN)
     const roleOptions = getRoleOptionsWithoutAdmin(DEFAULT_ROLE_OPTIONS);
+
+    // * Priority Options
+    const priorityOptions = [
+        { value: "GENERAL", label: "General" },
+        { value: "IMPORTANT", label: "Important" },
+        { value: "URGENT", label: "Urgent" },
+    ];
 
     // * Custom Styles for React-Select Multi-Select with Checkboxes
     const selectStyles = {
@@ -134,6 +142,12 @@ const CreateFeedbackModal = ({ onClose }) => {
                 color: "#422006",
             },
         }),
+        singleValue: (base) => ({
+            ...base,
+            fontSize: "0.875rem",
+            color: "#111827",
+            margin: "0",
+        }),
         menu: (base) => ({
             ...base,
             borderRadius: "0.5rem",
@@ -164,7 +178,7 @@ const CreateFeedbackModal = ({ onClose }) => {
         }),
     };
 
-    // * Custom Option Component with Checkbox
+    // * Custom Option Component with Checkbox (for multi-select)
     const CheckboxOption = (props) => {
         // Skip rendering checkbox for placeholder/empty options
         if (!props.data.value || props.data.value === "") {
@@ -188,58 +202,35 @@ const CreateFeedbackModal = ({ onClose }) => {
         );
     };
 
-    // * Handle Adding New Question Field
-    const handleAddQuestion = () => {
-        setQuestions([...questions, ""]);
-    };
-
-    // * Handle Removing Question Field
-    const handleRemoveQuestion = (index) => {
-        if (questions.length === 1) {
-            toast.error("At least one question is required");
-            return;
-        }
-        const updatedQuestions = questions.filter((_, i) => i !== index);
-        setQuestions(updatedQuestions);
-    };
-
-    // * Handle Question Input Change
-    const handleQuestionChange = (index, value) => {
-        const updatedQuestions = [...questions];
-        updatedQuestions[index] = value;
-        setQuestions(updatedQuestions);
-    };
-
-    // * Handle Feedback Creation
-    const handleCreateFeedback = async () => {
+    // * Handle Notice Creation
+    const handleCreateNotice = async () => {
         // Validation
-        if (!title.trim()) return toast.error("Feedback title is required");
-        if (assignedRoles.length === 0) return toast.error("At least one role must be selected");
-
-        const validQuestions = questions.filter(q => q.trim() !== "");
-        if (validQuestions.length === 0) return toast.error("At least one question is required");
-
+        if (!title.trim()) return toast.error("Notice title is required");
+        if (!content.trim()) return toast.error("Notice content is required");
+        if (targetRoles.length === 0) return toast.error("At least one role must be selected");
         if (!confirmed) return toast.error("Please confirm before proceeding");
 
         try {
             setLoading(true);
 
             // Prepare data payload
-            const feedbackData = {
+            const noticeData = {
                 title: title.trim(),
-                assignedRoles: assignedRoles.map(role => role.value),
-                questions: validQuestions
+                content: content.trim(),
+                priority: priority,
+                targetRoles: targetRoles.map(role => role.value),
+                // createdBy and createdAt will be handled by backend
             };
 
-            console.log("Feedback Data:", feedbackData);
+            console.log("Notice Data:", noticeData);
 
             // TODO: Replace with actual API call when backend is ready
-            // const res = await apiService.createFeedback(feedbackData);
+            // const res = await apiService.createNotice(noticeData);
 
-            toast.success("Feedback form created successfully!", { duration: 3000 });
+            toast.success("Notice created successfully!", { duration: 3000 });
             onClose();
         } catch (err) {
-            toast.error(err?.response?.data?.error || "Failed to create feedback");
+            toast.error(err?.response?.data?.error || "Failed to create notice");
         } finally {
             setLoading(false);
         }
@@ -255,75 +246,63 @@ const CreateFeedbackModal = ({ onClose }) => {
                 <div className="bg-white rounded-xl p-4 md:p-6 shadow-xl flex flex-col border border-red-700/30 max-h-[95vh] overflow-y-auto">
                     {/* * Header Section */}
                     <div className="mb-3 text-center flex-shrink-0">
-                        <h3 className="text-2xl font-bold text-amber-950">Create Feedback Form</h3>
-                        <p className="text-sm text-gray-700 mt-1">Design a new feedback form with custom questions</p>
+                        <h3 className="text-2xl font-bold text-amber-950">Create Notice</h3>
+                        <p className="text-sm text-gray-700 mt-1">Post an announcement for selected roles</p>
                     </div>
 
                     {/* * Body Section - Form Inputs */}
                     <div className="flex-1 flex flex-col gap-3">
                         {/* Title Input */}
-                        <label className="text-sm font-semibold text-gray-800">Feedback Title</label>
+                        <label className="text-sm font-semibold text-gray-800">Notice Title</label>
                         <input
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            placeholder="Ex: Canteen Feedback"
-                            maxLength={100}
+                            placeholder="Ex: Holiday Announcement - Diwali 2025"
+                            maxLength={150}
                             className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
                 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600"
                         />
 
-                        {/* Assigned Roles Multi-Select with Checkboxes */}
-                        <label className="text-sm font-semibold text-gray-800 mt-1">Assigned Roles</label>
+                        {/* Content Textarea */}
+                        <label className="text-sm font-semibold text-gray-800 mt-1">Content</label>
+                        <textarea
+                            value={content}
+                            onChange={(e) => setContent(e.target.value)}
+                            placeholder="Enter notice content..."
+                            rows="4"
+                            maxLength={1000}
+                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
+                focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 resize-none"
+                        />
+
+                        {/* Priority Select */}
+                        <label className="text-sm font-semibold text-gray-800 mt-1">Priority</label>
+                        <Select
+                            styles={selectStyles}
+                            placeholder="Select Priority..."
+                            value={priorityOptions.find(p => p.value === priority)}
+                            onChange={(opt) => setPriority(opt?.value || "GENERAL")}
+                            options={priorityOptions}
+                            menuPortalTarget={document.body}
+                            menuPosition="fixed"
+                        />
+
+                        {/* Target Roles Multi-Select with Checkboxes */}
+                        <label className="text-sm font-semibold text-gray-800 mt-1">Target Roles</label>
                         <Select
                             isMulti
                             closeMenuOnSelect={false}
                             hideSelectedOptions={false}
                             styles={selectStyles}
                             placeholder="Select Roles..."
-                            value={assignedRoles}
-                            onChange={(selected) => setAssignedRoles(selected || [])}
+                            value={targetRoles}
+                            onChange={(selected) => setTargetRoles(selected || [])}
                             options={roleOptions}
                             components={{ Option: CheckboxOption }}
                             menuPortalTarget={document.body}
                             menuPosition="fixed"
                         />
-
-                        {/* Questions Section - Dynamic Fields */}
-                        <label className="text-sm font-semibold text-gray-800 mt-2">Questions</label>
-                        <div className="flex flex-col gap-2">
-                            {questions.map((question, index) => (
-                                <div key={index} className="flex items-center gap-2">
-                                    <input
-                                        type="text"
-                                        value={question}
-                                        onChange={(e) => handleQuestionChange(index, e.target.value)}
-                                        placeholder={`Question ${index + 1}`}
-                                        maxLength={200}
-                                        className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm
-                      focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600"
-                                    />
-
-                                    {/* Remove Button */}
-                                    <button
-                                        onClick={() => handleRemoveQuestion(index)}
-                                        className="px-3 py-2 rounded-lg bg-red-100 hover:bg-red-200 text-red-700 font-semibold text-sm transition-colors duration-200"
-                                        title="Remove question"
-                                    >
-                                        ✕
-                                    </button>
-                                </div>
-                            ))}
-
-                            {/* Add New Question Button */}
-                            <button
-                                onClick={handleAddQuestion}
-                                className="w-full py-2 rounded-lg border-2 border-dashed border-gray-300 hover:border-red-400 hover:bg-red-50 text-gray-600 hover:text-red-700 font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2"
-                            >
-                                <span className="text-lg">+</span>
-                                Add Question
-                            </button>
-                        </div>
                     </div>
 
                     {/* * Footer Section - Action Buttons */}
@@ -335,7 +314,7 @@ const CreateFeedbackModal = ({ onClose }) => {
                                     onClick={() => setConfirmVisible(true)}
                                     className="flex-1 py-2 rounded-lg bg-red-700 hover:bg-red-800 text-white font-semibold hover:scale-95 transition-transform duration-300 shadow"
                                 >
-                                    Create Feedback
+                                    Create Notice
                                 </button>
 
                                 <button
@@ -362,7 +341,7 @@ const CreateFeedbackModal = ({ onClose }) => {
                                 {/* Final Action Buttons */}
                                 <div className="flex gap-2">
                                     <button
-                                        onClick={handleCreateFeedback}
+                                        onClick={handleCreateNotice}
                                         disabled={!confirmed || loading}
                                         className={`flex-1 py-2 rounded-lg text-white font-semibold
                       hover:scale-95 transition-transform duration-300 shadow
@@ -393,32 +372,32 @@ const CreateFeedbackModal = ({ onClose }) => {
             {/* * Custom Styles - Animations and Scrollbar */}
             <style>
                 {`
-                    /* Slide-up animation for modal entrance */
-                    @keyframes slideUp {
-                        0% { transform: translateY(100%); opacity: 0; }
-                        100% { transform: translateY(0); opacity: 1; }
-                    }
-                    .animate-slideUp { animation: slideUp 0.2s ease-out forwards; }
+          /* Slide-up animation for modal entrance */
+          @keyframes slideUp {
+            0% { transform: translateY(100%); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+          }
+          .animate-slideUp { animation: slideUp 0.2s ease-out forwards; }
 
-                    /* Custom scrollbar styling for modal */
-                    .overflow-y-auto::-webkit-scrollbar {
-                        width: 8px;
-                    }
+          /* Custom scrollbar styling for modal */
+          .overflow-y-auto::-webkit-scrollbar {
+            width: 8px;
+          }
 
-                    .overflow-y-auto::-webkit-scrollbar-track {
-                        background: transparent;
-                        margin: 0.4rem 0;
-                    }
+          .overflow-y-auto::-webkit-scrollbar-track {
+            background: transparent;
+            margin: 0.4rem 0;
+          }
 
-                    .overflow-y-auto::-webkit-scrollbar-thumb {
-                        background: #d1d5db;
-                        border-radius: 8px;
-                    }
+          .overflow-y-auto::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 8px;
+          }
 
-                    .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-                        background: #9ca3af;
-                    }
-                `}
+          .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+          }
+        `}
             </style>
         </div>
     );

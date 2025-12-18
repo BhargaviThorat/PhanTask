@@ -24,22 +24,30 @@ const SideBar = ({ children }) => {
 
     // ! Tasks
     isAdmin
-      ? { name: "Manage Tasks", icon: "fa-plus", path: "/admin/manage-tasks" }
-      : { name: "Assigned Tasks", icon: "fa-clipboard", path: "/tasks" },
+      ? { name: "Manage Tasks", icon: "fa-list-check", path: "/admin/manage-tasks" }
+      : { name: "Assigned Tasks", icon: "fa-clipboard-list", path: "/tasks" },
 
     // ! Users (admin only)
     isAdmin ?
-      { name: "Manage Users", icon: "fa-users", path: "/admin/manage-users" } :
+      { name: "Manage Users", icon: "fa-users-gear", path: "/admin/manage-users" } :
       null,
 
-    // ! Attendance
-    { name: "Attendance", icon: "fa-circle-check", path: "/attendance" },
+    // ! Attendance/Timesheet
+    isAdmin
+      ? { name: "Timesheet", icon: "fa-calendar-check", path: "/admin/manage-attendance" }
+      : { name: "Attendance", icon: "fa-calendar-days", path: "/attendance" },
+
+    // ! Notices
+    isAdmin
+      ? { name: "Manage Notices", icon: "fa-bullhorn", path: "/admin/manage-notices" }
+      : { name: "Notices", icon: "fa-clipboard", path: "/notices" },
 
     { name: "SocialHub", icon: "fa-comments", path: "/socialhub" },
-    { name: "Helpline", icon: "fa-phone", path: "/helpline" },
-    { name: "Feedback", icon: "fa-message", path: "/feedback" },
+    { name: "Helpline", icon: "fa-headset", path: "/helpline" },
+    { name: "Feedback", icon: "fa-comment-dots", path: "/feedback" },
     { name: "Settings", icon: "fa-gear", path: "/settings" },
   ].filter(Boolean); // remove nulls
+
 
   // Called when logo <img> is clicked (desktop or mobile)
   const handleLogoClick = () => {
@@ -99,6 +107,35 @@ const SideBar = ({ children }) => {
         </div>
       )}
 
+      {/* Custom Scrollbar Styles */}
+      <style>
+        {`
+    /* Scrollbar styling ONLY for sidebars */
+    .sidebar-scroll::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .sidebar-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .sidebar-scroll::-webkit-scrollbar-thumb {
+      background: #8b3333;
+      border-radius: 8px;
+    }
+
+    .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+      background: #a83c3c;
+    }
+
+    /* Firefox scrollbar for sidebar only */
+    .sidebar-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: #8b3333 transparent;
+    }
+  `}
+      </style>
+
 
       <div className="flex h-screen bg-[#fff9f8] font-sans">
         {/* Desktop Sidebar */}
@@ -123,6 +160,7 @@ const SideBar = ({ children }) => {
       </div>
     </>
   );
+
 };
 
 export default SideBar;

@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from "react-router-dom";
 
-
 const DesktopSideBar = ({ menuItems, onLogoClick }) => {
     const [isOpen, setIsOpen] = useState(true);
 
@@ -17,7 +16,7 @@ const DesktopSideBar = ({ menuItems, onLogoClick }) => {
                         <img
                             src="/rectangular-logo.png"
                             alt="PhanTask Logo"
-                            className="w-3/4"
+                            className="w-3/4 cursor-pointer"
                             onClick={onLogoClick}
                         />
 
@@ -41,7 +40,7 @@ const DesktopSideBar = ({ menuItems, onLogoClick }) => {
             </div>
 
             {/* Menu Items */}
-            <nav className="flex-1 p-4 overflow-y-hidden overflow-x-hidden">
+            <nav className="flex-1 p-4 overflow-y-auto overflow-x-hidden sidebar-scroll">
                 <ul className="space-y-1.5">
                     {menuItems.map((item) => (
                         <li key={item.name}>
