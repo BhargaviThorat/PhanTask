@@ -2,32 +2,41 @@ package com.phantask.feedback.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
-import com.phantask.task.entity.TaskStatus;
-
-
+/**
+ * DTO used by ADMIN to create or update a feedback template.
+ *
+ * This defines:
+ *  - feedback title
+ *  - roles to which feedback is assigned (multiple roles allowed)
+ *  - list of feedback questions
+ *
+ * This DTO does NOT contain any database-related fields.
+ */
 @Data
 public class CreateFeedbackDto {
 
-    @NotEmpty
+    /**
+     * Title of the feedback.
+     * Example: "Canteen Feedback", "Library Feedback"
+     */
+    @NotEmpty(message = "Feedback title cannot be empty")
     private String title;
 
-    @NotEmpty
-    private String entityName;
-
-    @NotEmpty
+    /**
+     * List of roles to which this feedback applies.
+     * Example: ["HR", "IT", "DEVELOPER"]
+     *
+     * Stored internally as comma-separated values.
+     */
+    @NotEmpty(message = "At least one role must be assigned")
     private List<String> assignedRoles;
 
-    @NotEmpty
+    /**
+     * List of questions shown to the user while submitting feedback.
+     * Example: ["Cleanliness", "Food Quality", "Service Speed"]
+     */
+    @NotEmpty(message = "Feedback must contain at least one question")
     private List<String> questions;
-
-	
-    
-    
 }
