@@ -2,6 +2,7 @@ package com.phantask.feedback.controller;
 
 import com.phantask.feedback.dto.CreateFeedbackDto;
 import com.phantask.feedback.dto.FeedbackReportDto;
+import com.phantask.feedback.dto.FeedbackSummaryDto;
 import com.phantask.feedback.dto.SubmitFeedbackDto;
 import com.phantask.feedback.entity.Feedback;
 import com.phantask.feedback.service.FeedbackService;
@@ -50,9 +51,10 @@ public class FeedbackController {
      */
     @GetMapping("/admin/all")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Feedback>> getAll() {
-        return ResponseEntity.ok(service.getAllFeedbackTemplates());
+    public ResponseEntity<List<FeedbackSummaryDto>> getAll() {
+        return ResponseEntity.ok(service.getAllFeedbackSummaries());
     }
+
 
     /**
      * Admin updates a feedback template.

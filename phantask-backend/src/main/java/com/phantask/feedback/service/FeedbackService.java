@@ -2,6 +2,7 @@ package com.phantask.feedback.service;
 
 import com.phantask.feedback.dto.CreateFeedbackDto;
 import com.phantask.feedback.dto.FeedbackReportDto;
+import com.phantask.feedback.dto.FeedbackSummaryDto;
 import com.phantask.feedback.dto.SubmitFeedbackDto;
 import com.phantask.feedback.entity.Feedback;
 import com.phantask.feedback.entity.Rating;
@@ -62,9 +63,39 @@ public class FeedbackService {
      * Fetches all feedback templates.
      * Used by admin dashboard.
      */
-    public List<Feedback> getAllFeedbackTemplates() {
-        return feedbackRepo.findAll();
+    public List<FeedbackSummaryDto> getAllFeedbackSummaries() {
+
+        return feedbackRepo.findAll().stream().map(feedback -> {
+
+            FeedbackSummaryDto dto = new FeedbackSummaryDto();
+            dto.setFeedbackId(feedback.getFeedbackId());
+            dto.setTitle(feedback.getTitle());
+
+            // Convert CSV → List
+            dto.setAssignedRoles(
+                    Arrays.stream(feedback.getAssignedRoles().split(","))
+                            .map(String::trim)
+                            .toList()
+            );
+
+            // Convert CSV → List
+            dto.setQuestions(
+                    Arrays.stream(feedback.getQuestions().split(","))
+                            .map(String::trim)
+                            .toList()
+            );
+
+            dto.setCreatedAt(feedback.getCreatedAt());
+
+            // Count submissions per feedback
+            dto.setSubmissionCount(
+                    submissionRepo.countByFeedback(feedback)
+            );
+
+            return dto;
+        }).toList();
     }
+
 
     /**
      * Updates a feedback template.
