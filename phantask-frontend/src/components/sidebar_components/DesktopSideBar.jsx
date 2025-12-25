@@ -16,7 +16,7 @@ const DesktopSideBar = ({ menuItems, onLogoClick }) => {
                         <img
                             src="/rectangular-logo.png"
                             alt="PhanTask Logo"
-                            className="w-3/4 cursor-pointer"
+                            className="w-3/4"
                             onClick={onLogoClick}
                         />
 
